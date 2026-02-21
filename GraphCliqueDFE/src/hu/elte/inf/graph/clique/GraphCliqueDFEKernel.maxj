@@ -1,0 +1,66 @@
+package hu.elte.inf.graph.clique;
+
+import com.maxeler.maxcompiler.v2.kernelcompiler.Kernel;
+import com.maxeler.maxcompiler.v2.kernelcompiler.KernelParameters;
+import com.maxeler.maxcompiler.v2.kernelcompiler.types.base.DFEVar;
+import com.maxeler.maxcompiler.v2.kernelcompiler.types.base.DFEType;
+
+public class GraphCliqueDFEKernel extends Kernel {
+
+	private static final DFEType UINT64 = dfeUInt(64);
+	private static final DFEType UINT6 = dfeUInt(6);
+	private static final DFEType BOOL = dfeUInt(1);
+	
+	private static final int LOOP_LATENCY = 2;
+
+	@SuppressWarnings("deprecation")
+	public GraphCliqueDFEKernel(final KernelParameters parameters) {
+		super(parameters);
+
+		DFEVar initialSubset = io.scalarInput("initialSubset", UINT64);
+		
+		DFEVar tick = control.count.simpleCounter(32);
+		DFEVar isValidTick = tick.slice(0, 1).cast(BOOL) === 0;
+		DFEVar isFirst = tick === 0;
+		
+		optimization.pushPipeliningFactor(0);
+		
+		DFEVar subsetFeedback = UINT64.newInstance(this);
+		DFEVar subset = isFirst ? initialSubset : subsetFeedback;
+		
+		DFEVar c = subset & (~subset + 1);
+		DFEVar r = subset + c;
+		DFEVar diff = (subset ^ r) >> 2;
+		DFEVar shiftAmount = ctz64(c);
+		DFEVar divByC = barrelShiftRight(diff, shiftAmount);
+		DFEVar nextSubset = divByC | r;
+		
+		subsetFeedback <== stream.offset(nextSubset, -LOOP_LATENCY);
+		
+		optimization.popPipeliningFactor();
+		
+		io.output("subset", subset, UINT64, isValidTick);
+	}
+	
+	private DFEVar ctz64(DFEVar value) {
+		DFEVar result = constant.var(UINT6, 0);
+		for (int i = 0; i < 64; ++i) {
+			DFEVar isBitSet = value.slice(i, 1).cast(BOOL);
+			DFEVar pos = constant.var(UINT6, i);
+			result = result | (isBitSet === 1 ? pos : constant.var(UINT6, 0));
+		}
+		
+		return result;
+	}
+	
+	private DFEVar barrelShiftRight(DFEVar value, DFEVar amount) {
+		DFEVar result = value;
+		for (int i = 0; i < 6; ++i) {
+			DFEVar isBitSet = amount.slice(i, 1).cast(BOOL);
+			DFEVar shifted = result >> (1 << i);
+			result = (isBitSet === 1) ? shifted : result;
+		}
+		
+		return result;
+	}
+}
