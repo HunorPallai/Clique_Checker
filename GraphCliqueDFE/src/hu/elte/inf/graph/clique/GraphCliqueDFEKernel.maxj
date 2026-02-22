@@ -17,29 +17,43 @@ public class GraphCliqueDFEKernel extends Kernel {
 	public GraphCliqueDFEKernel(final KernelParameters parameters) {
 		super(parameters);
 
-		DFEVar initialSubset = io.scalarInput("initialSubset", UINT64);
+		DFEVar initialSubsetA = io.scalarInput("initialSubsetA", UINT64);
+		DFEVar initialSubsetB = io.scalarInput("initialSubsetB", UINT64);
+		DFEVar[] adjMatrixRows = new DFEVar[64];
+		for (int i = 0; i < 64; ++i) {
+			adjMatrixRows[i] = io.scalarInput("adjMatrixRow" + i, UINT64);
+		}
 		
 		DFEVar tick = control.count.simpleCounter(32);
-		DFEVar isValidTick = tick.slice(0, 1).cast(BOOL) === 0;
-		DFEVar isFirst = tick === 0;
+		DFEVar isEvenTick = tick.slice(0, 1).cast(BOOL) === 0;
+		DFEVar isFirstA = tick === 0;
+		DFEVar isFirstB = tick === 1;
 		
 		optimization.pushPipeliningFactor(0);
 		
-		DFEVar subsetFeedback = UINT64.newInstance(this);
-		DFEVar subset = isFirst ? initialSubset : subsetFeedback;
+		DFEVar subsetAFeedback = UINT64.newInstance(this);
+		DFEVar subsetA = isFirstA ? initialSubsetA : subsetAFeedback;
+		DFEVar nextSubsetA = nextGospersSubset(subsetA);
+		subsetAFeedback <== stream.offset(nextSubsetA, -LOOP_LATENCY);
 		
+		DFEVar subsetBFeedback = UINT64.newInstance(this);
+		DFEVar subsetB = isFirstB ? initialSubsetB : subsetBFeedback;
+		DFEVar nextSubsetB = nextGospersSubset(subsetB);
+		subsetBFeedback <== stream.offset(nextSubsetB, -LOOP_LATENCY);
+		
+		optimization.popPipeliningFactor();
+		
+		DFEVar subset = isEvenTick ? subsetA : subsetB;
+		io.output("subset", subset, UINT64);
+	}
+	
+	private DFEVar nextGospersSubset(DFEVar subset) {
 		DFEVar c = subset & (~subset + 1);
 		DFEVar r = subset + c;
 		DFEVar diff = (subset ^ r) >> 2;
 		DFEVar shiftAmount = ctz64(c);
 		DFEVar divByC = barrelShiftRight(diff, shiftAmount);
-		DFEVar nextSubset = divByC | r;
-		
-		subsetFeedback <== stream.offset(nextSubset, -LOOP_LATENCY);
-		
-		optimization.popPipeliningFactor();
-		
-		io.output("subset", subset, UINT64, isValidTick);
+		return divByC | r;
 	}
 	
 	private DFEVar ctz64(DFEVar value) {
@@ -59,6 +73,16 @@ public class GraphCliqueDFEKernel extends Kernel {
 			DFEVar isBitSet = amount.slice(i, 1).cast(BOOL);
 			DFEVar shifted = result >> (1 << i);
 			result = (isBitSet === 1) ? shifted : result;
+		}
+		
+		return result;
+	}
+	
+	private DFEVar lookupRow(DFEVar[] rows, DFEVar index) {
+		DFEVar result = constant.var(UINT64, 0);
+		
+		for (int i = 0; i < 64; ++i) {
+			result = (index === i) ? rows[i] : result;
 		}
 		
 		return result;
