@@ -8,7 +8,7 @@
 -I/opt/maxcompiler-2021.1/include/slic
 -I/include
 -I/opt/MaxPower-2021.1/src/maxpower/kernel/random/runtime
--I/home/pallai/GraphClique/GraphCliqueDFE/builds/simulation
+-I/home/pallai/Clique_Checker/GraphCliqueDFE/builds/simulation
 -fPIC
 -Wall
 -march=native

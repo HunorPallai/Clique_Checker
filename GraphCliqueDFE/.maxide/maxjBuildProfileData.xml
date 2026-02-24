@@ -5,7 +5,7 @@
             <manager>hu.elte.inf.graph.clique.GraphCliqueDFEManager</manager>
             <maxcompilerTarget>DFE_SIM</maxcompilerTarget>
             <maxfileName>Simulation</maxfileName>
-            <resultDir>/home/pallai/GraphClique/GraphCliqueDFE/builds/simulation</resultDir>
+            <resultDir>/home/pallai/Clique_Checker/GraphCliqueDFE/builds/simulation</resultDir>
             <engineParams/>
             <jvmArgs>-Xmx2G</jvmArgs>
         </maxjBuildProfile>

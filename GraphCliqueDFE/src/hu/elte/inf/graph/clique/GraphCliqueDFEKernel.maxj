@@ -12,6 +12,7 @@ public class GraphCliqueDFEKernel extends Kernel {
 	private static final DFEType BOOL = dfeUInt(1);
 	
 	private static final int LOOP_LATENCY = 2;
+	private static final int K = 3;
 
 	@SuppressWarnings("deprecation")
 	public GraphCliqueDFEKernel(final KernelParameters parameters) {
@@ -41,10 +42,42 @@ public class GraphCliqueDFEKernel extends Kernel {
 		DFEVar nextSubsetB = nextGospersSubset(subsetB);
 		subsetBFeedback <== stream.offset(nextSubsetB, -LOOP_LATENCY);
 		
+		DFEVar subset = isEvenTick ? subsetA : subsetB;
+		
+		DFEVar[] indexes = new DFEVar[K];
+		DFEVar remaining = subset;
+		for (int i = 0; i < K; ++i) {
+			indexes[i] = ctz64(remaining);
+			remaining = remaining & (remaining - 1);
+		}
+		
+		DFEVar isClique = constant.var(BOOL, 1);
+		for (int i = 0; i < K; ++i) {
+			DFEVar row = lookupRow(adjMatrixRows, indexes[i]);
+			DFEVar match = (row & subset) === subset;
+			DFEVar idx = constant.var(UINT6, i);
+			DFEVar checkBound = (idx < K) ? match : constant.var(BOOL, 1);
+			isClique = isClique & checkBound;
+		}
+		
+		DFEVar increment = (isClique === 1) ? constant.var(UINT64, 1) 
+											: constant.var(UINT64, 0); 
+		
+		DFEVar countAFeedback = UINT64.newInstance(this);
+		DFEVar prevACount = isFirstA ? constant.var(UINT64, 0) : countAFeedback;
+		DFEVar newACount = prevACount + (isEvenTick ? increment : constant.var(UINT64, 0)); 
+		countAFeedback <== stream.offset(newACount, -LOOP_LATENCY);
+		
+		DFEVar countBFeedback = UINT64.newInstance(this);
+		DFEVar prevBCount = isFirstB ? constant.var(UINT64, 0) : countBFeedback;
+		DFEVar newBCount = prevBCount + (isEvenTick ? constant.var(UINT64, 0) : increment); 
+		countBFeedback <== stream.offset(newBCount, -LOOP_LATENCY);
+		
 		optimization.popPipeliningFactor();
 		
-		DFEVar subset = isEvenTick ? subsetA : subsetB;
-		io.output("subset", subset, UINT64);
+		DFEVar activeCount = isEvenTick ? newACount : newBCount;
+		
+		io.output("cliqueCount", activeCount, UINT64);
 	}
 	
 	private DFEVar nextGospersSubset(DFEVar subset) {
@@ -57,9 +90,10 @@ public class GraphCliqueDFEKernel extends Kernel {
 	}
 	
 	private DFEVar ctz64(DFEVar value) {
+		DFEVar lowest1Bit = value & (~value + 1);
 		DFEVar result = constant.var(UINT6, 0);
 		for (int i = 0; i < 64; ++i) {
-			DFEVar isBitSet = value.slice(i, 1).cast(BOOL);
+			DFEVar isBitSet = lowest1Bit.slice(i, 1).cast(BOOL);
 			DFEVar pos = constant.var(UINT6, i);
 			result = result | (isBitSet === 1 ? pos : constant.var(UINT6, 0));
 		}
@@ -68,21 +102,47 @@ public class GraphCliqueDFEKernel extends Kernel {
 	}
 	
 	private DFEVar barrelShiftRight(DFEVar value, DFEVar amount) {
-		DFEVar result = value;
-		for (int i = 0; i < 6; ++i) {
-			DFEVar isBitSet = amount.slice(i, 1).cast(BOOL);
-			DFEVar shifted = result >> (1 << i);
-			result = (isBitSet === 1) ? shifted : result;
-		}
+//		DFEVar result = value;
+//		for (int i = 0; i < 6; ++i) {
+//			DFEVar isBitSet = amount.slice(i, 1).cast(BOOL);
+//			DFEVar shifted = result >> (1 << i);
+//			result = (isBitSet === 1) ? shifted : result;
+//		}
+//		
+//		return result;
+
+		DFEVar bit0 = amount.slice(0, 1).cast(BOOL);
+		DFEVar shift0 = value >> 1;
+		DFEVar result0 = (bit0 === 1) ? shift0 : value;
 		
-		return result;
+		DFEVar bit1 = amount.slice(1, 1).cast(BOOL);
+		DFEVar shift1 = result0 >> 2;
+		DFEVar result1 = (bit1 === 1) ? shift1 : result0;
+		
+		DFEVar bit2 = amount.slice(2, 1).cast(BOOL);
+		DFEVar shift2 = result1 >> 4;
+		DFEVar result2 = (bit2 === 1) ? shift2 : result1;
+		
+		DFEVar bit3 = amount.slice(3, 1).cast(BOOL);
+		DFEVar shift3 = result2 >> 8;
+		DFEVar result3 = (bit3 === 1) ? shift3 : result2;
+		
+		DFEVar bit4 = amount.slice(4, 1).cast(BOOL);
+		DFEVar shift4 = result3 >> 16;
+		DFEVar result4 = (bit4 === 1) ? shift4 : result3;
+		
+		DFEVar bit5 = amount.slice(5, 1).cast(BOOL);
+		DFEVar shift5 = result4 >> 32;
+		DFEVar result5 = (bit5 === 1) ? shift5 : result4;
+		
+		return result5;
 	}
 	
 	private DFEVar lookupRow(DFEVar[] rows, DFEVar index) {
-		DFEVar result = constant.var(UINT64, 0);
+		DFEVar result = rows[0];
 		
-		for (int i = 0; i < 64; ++i) {
-			result = (index === i) ? rows[i] : result;
+		for (int i = 1; i < 64; ++i) {
+			result = (index === constant.var(UINT6, i)) ? rows[i] : result;
 		}
 		
 		return result;

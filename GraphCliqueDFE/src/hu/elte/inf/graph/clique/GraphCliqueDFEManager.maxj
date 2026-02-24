@@ -19,12 +19,9 @@ public class GraphCliqueDFEManager extends MAX5CManager {
 //		final DFELink adjMatrixRowStream = addStreamFromCPU("adjMatrixRow");
 //		kernel.getInput("adjMatrixRow") <== adjMatrixRowStream;
 
-//		//DFE -> CPU
-//		final DFELink cliqueCountStream = addStreamToCPU("cliqueCount");
-//		cliqueCountStream <== kernel.getOutput("cliqueCount");
+		final DFELink cliqueCountStream = addStreamToCPU("cliqueCount");
+		cliqueCountStream <== kernel.getOutput("cliqueCount");
 		
-		final DFELink subset = addStreamToCPU("subset");
-		subset <== kernel.getOutput("subset");
 	}
 
 	public static void main(final String[] argv) {

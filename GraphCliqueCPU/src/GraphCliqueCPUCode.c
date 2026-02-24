@@ -74,6 +74,18 @@ void gospersSplit(const int k, const int n, const int concurrency, GosperPartiti
 	free(boundarySubsets);
 }
 
+uint64_t* generateCompleteMatrix(int n) {
+	uint64_t* result = (uint64_t*)malloc(n * sizeof(uint64_t));
+	memset(result, 0, n * sizeof(uint64_t));
+
+	uint64_t bits = (n == 64) ? ~(uint64_t)0 : ((uint64_t)1 << n) - 1;
+	for (int i = 0; i < n; ++i) {
+		result[i] = bits;
+	}
+
+	return result;
+}
+
 int main(int argc, char* argv[]) {
 	int n = 6;
 	int k = 3;
@@ -92,8 +104,9 @@ int main(int argc, char* argv[]) {
 
 	uint64_t subsetCount = binomialCoefficient(n, k);
 	uint64_t tickCount = 2 * partitions[0].count;
-	uint64_t* subset = (uint64_t*) malloc(subsetCount * sizeof(uint64_t));
-	//============
+	uint64_t* cliques = (uint64_t*) malloc(subsetCount * sizeof(uint64_t));
+	uint64_t* adjMatrix = generateCompleteMatrix(n);
+
 	max_file_t* maxfile = Simulation_init();
 	max_engine_t* engine = max_load(maxfile, "*");
 	max_actions_t* actions = max_actions_init(maxfile, "default");
@@ -103,28 +116,26 @@ int main(int argc, char* argv[]) {
 	max_set_uint64t(actions, "GraphCliqueDFEKernel", "initialSubsetA", partitions[0].initialSubset);
 	max_set_uint64t(actions, "GraphCliqueDFEKernel", "initialSubsetB", partitions[1].initialSubset);
 
-//	char name[16];
-//	for (int i = 0; i < 64; ++i) {
-//		snprintf(name, sizeof(name), "adjRow%d", i);
-//		max_set_uint64t(actions, "GraphCliqueDFEKernel", name, binarizedAdjMatrix[i]);
-//	}
+	char name[16];
+	for (int i = 0; i < 64; ++i) {
+		snprintf(name, sizeof(name), "adjMatrixRow%d", i);
+		max_set_uint64t(actions, "GraphCliqueDFEKernel", name, adjMatrix[i]);
+	}
 
-	max_queue_output(actions, "subset", subset, subsetCount * sizeof(uint64_t));
+	max_queue_output(actions, "cliqueCount", cliques, subsetCount * sizeof(uint64_t));
 
 	max_run(engine, actions);
-	//============
 
 	//Simulation(tickCount, partitions[0].initialSubset, partitions[1].initialSubset, subset, subsetCount * sizeof(uint64_t));
 	
 	for (uint64_t i = 0; i < subsetCount; i++)
-		printf("subset[%lu] = %lu\n", (unsigned long)i, (unsigned long) subset[i]);
+		printf("cliqueCount[%lu] = %lu\n", (unsigned long)i, (unsigned long) cliques[i]);
 
-	//============
 	max_actions_free(actions);
-	//============
 
-	free(subset);
+	free(cliques);
 	free(partitions);
+	free(adjMatrix);
 
 	return 0;
 }

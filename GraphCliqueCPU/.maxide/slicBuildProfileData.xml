@@ -7,7 +7,7 @@
         </slicBuildProfile>
         <slicBuildProfile name="Release">
             <makeMode>release</makeMode>
-            <maxfileDirectory>/home/pallai/GraphClique/GraphCliqueDFE/builds/simulation</maxfileDirectory>
+            <maxfileDirectory>/home/pallai/Clique_Checker/GraphCliqueDFE/builds/simulation</maxfileDirectory>
         </slicBuildProfile>
     </slicBuildProfiles>
 </slicBuildProfileData>
