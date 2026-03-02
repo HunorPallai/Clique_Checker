@@ -9,5 +9,9 @@
             <makeMode>release</makeMode>
             <maxfileDirectory>/home/pallai/Clique_Checker/GraphCliqueDFE/builds/simulation</maxfileDirectory>
         </slicBuildProfile>
+        <slicBuildProfile name="Bitstream_rel">
+            <makeMode>release</makeMode>
+            <maxfileDirectory>/home/pallai/Clique_Checker/GraphCliqueDFE/builds/bitstream</maxfileDirectory>
+        </slicBuildProfile>
     </slicBuildProfiles>
 </slicBuildProfileData>

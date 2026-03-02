@@ -12,8 +12,8 @@
         <maxjBuildProfile name="Bitstream">
             <manager>hu.elte.inf.graph.clique.GraphCliqueDFEManager</manager>
             <maxcompilerTarget>DFE</maxcompilerTarget>
-            <maxfileName>GraphCliqueDFE</maxfileName>
-            <resultDir>/home/pallai/GraphClique/GraphCliqueDFE/builds/bitstream</resultDir>
+            <maxfileName>Bitstream</maxfileName>
+            <resultDir>/home/pallai/Clique_Checker/GraphCliqueDFE/builds/bitstream</resultDir>
             <engineParams/>
             <jvmArgs>-Xmx2G</jvmArgs>
         </maxjBuildProfile>

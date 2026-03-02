@@ -14,7 +14,7 @@ MAXFILES := $(foreach D,$(MAXFILE_DIRS),$(wildcard $(D)/*.max))
 
 ##### Simulator configuration #####
 SIM_NAME := $(USER)_$(basename $(TARGET))_sim
-SIM_CARD := MAX5C
+SIM_CARD := AlveoU250
 
 ##### Compiler flags #####
 INCLUDES :=	\
@@ -147,6 +147,15 @@ run_sim: start_sim
 		LD_PRELOAD="$(MAXCOMPILERDIR)/lib/maxeleros-sim/lib/libmaxeleros.so:$(LD_PRELOAD)" \
 		SLIC_CONF="$(SLIC_CONF);use_simulation=$(SIM_NAME)" \
 		$(BIN_DIR)/$(TARGET)
+	@ echo
+	@ echo "$(BIN_DIR)/$(TARGET) Terminated successfully."
+	@ echo
+	
+.PHONY: run_dfe
+run_dfe:
+	@ echo "Running $(BIN_DIR)/$(TARGET)"
+	@ echo
+	@ hwloc-bind --membind node:0 --cpubind node:0 -- $(BIN_DIR)/$(TARGET)
 	@ echo
 	@ echo "$(BIN_DIR)/$(TARGET) Terminated successfully."
 	@ echo

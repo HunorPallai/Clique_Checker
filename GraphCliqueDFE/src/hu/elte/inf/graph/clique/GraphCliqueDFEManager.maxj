@@ -4,23 +4,26 @@ import com.maxeler.maxcompiler.v2.build.EngineParameters;
 import com.maxeler.maxcompiler.v2.managers.custom.DFELink;
 import com.maxeler.maxcompiler.v2.managers.custom.blocks.KernelBlock;
 
-import com.maxeler.platform.max5.manager.MAX5CManager;;
+import com.maxeler.platform.max5.manager.XilinxAlveoU250Manager;
 
-public class GraphCliqueDFEManager extends MAX5CManager {
+public class GraphCliqueDFEManager extends XilinxAlveoU250Manager {
 
-	public static final String kernelName = "GraphCliqueDFEKernel";
+	public static final String loaderName = "MatrixLoadKernel";
+	public static final String counterName = "GraphCliqueDFEKernel";
 
 	public GraphCliqueDFEManager(EngineParameters params) {
 		super(params);
 
-		final KernelBlock kernel = addKernel(new GraphCliqueDFEKernel(makeKernelParameters(kernelName)));
+		final KernelBlock loader = addKernel(new MatrixLoadKernel(makeKernelParameters(loaderName)));
+		final KernelBlock counter = addKernel(new GraphCliqueDFEKernel(makeKernelParameters(counterName)));
 		
-//		// CPU -> DFE
-//		final DFELink adjMatrixRowStream = addStreamFromCPU("adjMatrixRow");
-//		kernel.getInput("adjMatrixRow") <== adjMatrixRowStream;
+		final DFELink adjMatrixRowStream = addStreamFromCPU("adjMatrixRow");
+		loader.getInput("adjMatrixRow") <== adjMatrixRowStream;
 
+		counter.getInput("adjMatrix") <== loader.getOutput("adjMatrix");
+		
 		final DFELink cliqueCountStream = addStreamToCPU("cliqueCount");
-		cliqueCountStream <== kernel.getOutput("cliqueCount");
+		cliqueCountStream <== counter.getOutput("cliqueCount");
 		
 	}
 
