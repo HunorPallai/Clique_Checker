@@ -87,6 +87,24 @@ uint64_t* generateCompleteMatrix(int n) {
 	return result;
 }
 
+uint64_t* generateAdjacencyMatrix(int n, double p) {
+	uint64_t* result = (uint64_t*)malloc(n * sizeof(uint64_t));
+	memset(result, 0, n * sizeof(uint64_t));
+
+	for (int i = 0; i < n; ++i) {
+		for (int j = i + 1; j < n; ++j) {
+			double r = (double)rand() / (double)RAND_MAX;
+
+			if (r < p) {
+				result[i] |= (1ULL << j);
+				result[j] |= (1ULL << i);
+			}
+		}
+	}
+
+	return result;
+}
+
 int main(int argc, char* argv[]) {
 	int n = 6;
 	int k = 3;
