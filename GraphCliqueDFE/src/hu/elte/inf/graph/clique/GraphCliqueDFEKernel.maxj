@@ -15,36 +15,66 @@ import static hu.elte.inf.graph.clique.Utility.BOOL;
 import static hu.elte.inf.graph.clique.Utility.ADJ_MATRIX_TYPE;
 
 public class GraphCliqueDFEKernel extends Kernel {
-	private static final int LOOP_LATENCY = 2;
+	private static final int LOOP_LATENCY = 4;
 	private static final int K = 5;
 
 	@SuppressWarnings("deprecation")
 	public GraphCliqueDFEKernel(final KernelParameters parameters) {
 		super(parameters);
 
-		DFEVar initialSubsetA = io.scalarInput("initialSubsetA", UINT64);
-		DFEVar initialSubsetB = io.scalarInput("initialSubsetB", UINT64);
+		DFEVar initialSubset0 = io.scalarInput("initialSubset0", UINT64);
+		DFEVar initialSubset1 = io.scalarInput("initialSubset1", UINT64);
+		DFEVar initialSubset2 = io.scalarInput("initialSubset2", UINT64);
+		DFEVar initialSubset3 = io.scalarInput("initialSubset3", UINT64);
 		
 		DFEVector<DFEVar> adjMatrixRows = io.input("adjMatrix", ADJ_MATRIX_TYPE);
 		
 		DFEVar tick = control.count.simpleCounter(64);
-		DFEVar isEvenTick = tick.slice(0, 1).cast(BOOL) === 0;
-		DFEVar isFirstA = tick === 0;
-		DFEVar isFirstB = tick === 1;
+		
+		DFEVar hasLastBit = tick.slice(0, 1).cast(BOOL);
+		DFEVar hasSecondToLastBit = tick.slice(1, 1).cast(BOOL);
+
+		DFEVar tickModFourIsZero = ~hasLastBit & ~hasSecondToLastBit;
+		DFEVar tickModFourIsOne = hasLastBit & ~hasSecondToLastBit;
+		DFEVar tickModFourIsTwo = ~hasLastBit & hasSecondToLastBit;
+		DFEVar tickModFourIsThree = hasLastBit & hasSecondToLastBit;
+		
+		DFEVar isFirstSubset0 = tick === 0;
+		DFEVar isFirstSubset1 = tick === 1;
+		DFEVar isFirstSubset2 = tick === 2;
+		DFEVar isFirstSubset3 = tick === 3;
 		
 		optimization.pushPipeliningFactor(0);
 		
-		DFEVar subsetAFeedback = UINT64.newInstance(this);
-		DFEVar subsetA = isFirstA ? initialSubsetA : subsetAFeedback;
-		DFEVar nextSubsetA = nextGospersSubset(subsetA, this);
-		subsetAFeedback <== stream.offset(nextSubsetA, -LOOP_LATENCY);
+		DFEVar subset0Feedback = UINT64.newInstance(this);
+		DFEVar subset0 = isFirstSubset0 ? initialSubset0 : subset0Feedback;
+		DFEVar nextSubset0 = nextGospersSubset(subset0, this);
+		subset0Feedback <== stream.offset(nextSubset0, -LOOP_LATENCY);
 		
-		DFEVar subsetBFeedback = UINT64.newInstance(this);
-		DFEVar subsetB = isFirstB ? initialSubsetB : subsetBFeedback;
-		DFEVar nextSubsetB = nextGospersSubset(subsetB, this);
-		subsetBFeedback <== stream.offset(nextSubsetB, -LOOP_LATENCY);
+		DFEVar subset1Feedback = UINT64.newInstance(this);
+		DFEVar subset1 = isFirstSubset1 ? initialSubset1 : subset1Feedback;
+		DFEVar nextSubset1 = nextGospersSubset(subset1, this);
+		subset1Feedback <== stream.offset(nextSubset1, -LOOP_LATENCY);
 		
-		DFEVar subset = isEvenTick ? subsetA : subsetB;
+		DFEVar subset2Feedback = UINT64.newInstance(this);
+		DFEVar subset2 = isFirstSubset2 ? initialSubset2 : subset2Feedback;
+		DFEVar nextSubset2 = nextGospersSubset(subset2, this);
+		subset2Feedback <== stream.offset(nextSubset2, -LOOP_LATENCY);
+		
+		DFEVar subset3Feedback = UINT64.newInstance(this);
+		DFEVar subset3 = isFirstSubset3 ? initialSubset3 : subset3Feedback;
+		DFEVar nextSubset3 = nextGospersSubset(subset3, this);
+		subset3Feedback <== stream.offset(nextSubset3, -LOOP_LATENCY);
+		
+		debug.simPrintf("===============================\n");
+		debug.simPrintf("Tick: %d\n", tick);
+		
+		DFEVar subset = tickModFourIsZero ? subset0 : 
+						(tickModFourIsOne ? subset1 : 
+						(tickModFourIsTwo ? subset2 : 
+											subset3));
+		
+		debug.simPrintf("Subset: %d\n", subset);
 		
 		DFEVar[] indexes = new DFEVar[K];
 		DFEVar remaining = subset;
@@ -65,20 +95,42 @@ public class GraphCliqueDFEKernel extends Kernel {
 		DFEVar increment = (isClique === 1) ? constant.var(UINT64, 1) 
 											: constant.var(UINT64, 0); 
 		
-		DFEVar countAFeedback = UINT64.newInstance(this);
-		DFEVar prevACount = isFirstA ? constant.var(UINT64, 0) : countAFeedback;
-		DFEVar newACount = prevACount + (isEvenTick ? increment : constant.var(UINT64, 0)); 
-		countAFeedback <== stream.offset(newACount, -LOOP_LATENCY);
+		debug.simPrintf("Increment value: %d\n", increment);
 		
-		DFEVar countBFeedback = UINT64.newInstance(this);
-		DFEVar prevBCount = isFirstB ? constant.var(UINT64, 0) : countBFeedback;
-		DFEVar newBCount = prevBCount + (isEvenTick ? constant.var(UINT64, 0) : increment); 
-		countBFeedback <== stream.offset(newBCount, -LOOP_LATENCY);
+		DFEVar count0Feedback = UINT64.newInstance(this);
+		DFEVar prev0Count = isFirstSubset0 ? constant.var(UINT64, 0) : count0Feedback;
+		DFEVar new0Count = prev0Count + (tickModFourIsZero ? increment : constant.var(UINT64, 0)); 
+		count0Feedback <== stream.offset(new0Count, -LOOP_LATENCY);
+		
+		DFEVar count1Feedback = UINT64.newInstance(this);
+		DFEVar prev1Count = isFirstSubset1 ? constant.var(UINT64, 0) : count1Feedback;
+		DFEVar new1Count = prev1Count + (tickModFourIsOne ? increment : constant.var(UINT64, 0)); 
+		count1Feedback <== stream.offset(new1Count, -LOOP_LATENCY);
+		
+		DFEVar count2Feedback = UINT64.newInstance(this);
+		DFEVar prev2Count = isFirstSubset2 ? constant.var(UINT64, 0) : count2Feedback;
+		DFEVar new2Count = prev2Count + (tickModFourIsTwo ? increment : constant.var(UINT64, 0)); 
+		count2Feedback <== stream.offset(new2Count, -LOOP_LATENCY);
+		
+		DFEVar count3Feedback = UINT64.newInstance(this);
+		DFEVar prev3Count = isFirstSubset3 ? constant.var(UINT64, 0) : count3Feedback;
+		DFEVar new3Count = prev3Count + (tickModFourIsThree ? increment : constant.var(UINT64, 0)); 
+		count3Feedback <== stream.offset(new3Count, -LOOP_LATENCY);
+		
+		debug.simPrintf("New 0 count: %d\n", new0Count);
+		debug.simPrintf("New 1 count: %d\n", new1Count);
+		debug.simPrintf("New 2 count: %d\n", new2Count);
+		debug.simPrintf("New 3 count: %d\n", new3Count);
 		
 		optimization.popPipeliningFactor();
 		
-		DFEVar activeCount = isEvenTick ? newACount : newBCount;
+		DFEVar activeCount = tickModFourIsZero ? new0Count : 
+							 (tickModFourIsOne ? new1Count : 
+							 (tickModFourIsTwo ? new2Count : 
+								 				 new3Count));
 		
 		io.output("cliqueCount", activeCount, UINT64);
+		
+		debug.simPrintf("===============================\n");
 	}
 }

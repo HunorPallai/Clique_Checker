@@ -4,8 +4,8 @@
 #include <string.h>
 
 #include "GraphCliqueCPUCode.h"
-//#include "Simulation.h"
-#include "Bitstream.h"
+#include "Simulation.h"
+//#include "Bitstream.h"
 #include "MaxSLiCInterface.h"
 
 uint64_t binomialCoefficient(const int n, const int k) {
@@ -120,15 +120,18 @@ int main(int argc, char* argv[]) {
 
 	printf("PartA initial subset: %lu\n", (unsigned long) partitions[0].initialSubset);
 	printf("PartB initial subset: %lu\n", (unsigned long) partitions[1].initialSubset);
+	printf("PartC initial subset: %lu\n", (unsigned long) partitions[2].initialSubset);
+	printf("PartD initial subset: %lu\n", (unsigned long) partitions[3].initialSubset);
 
-	uint64_t LOAD_TICK_COUNT = 64;
 	uint64_t subsetCount = binomialCoefficient(n, k);
-	uint64_t computeTickCount = 2 * partitions[0].count;
+	printf("Binomial Coefficient n=%d, k=%d: %lu\n", n, k, (unsigned long) subsetCount);
+
+	uint64_t computeTickCount = CONCURRENCY * partitions[0].count;
 	uint64_t totalTickCount = computeTickCount + LOAD_TICK_COUNT;
 	uint64_t* cliques = (uint64_t*) malloc(subsetCount * sizeof(uint64_t));
 	uint64_t* adjMatrix = generateCompleteMatrix(n);
 
-	max_file_t* maxfile = Bitstream_init();
+	max_file_t* maxfile = Simulation_init();
 	max_engine_t* engine = max_load(maxfile, "*");
 	max_actions_t* actions = max_actions_init(maxfile, "default");
 
@@ -136,19 +139,19 @@ int main(int argc, char* argv[]) {
 	max_set_uint64t(actions, "MatrixLoadKernel", "loadTickCount", LOAD_TICK_COUNT);
 
 	max_set_ticks(actions, "GraphCliqueDFEKernel", computeTickCount);
-	max_set_uint64t(actions, "GraphCliqueDFEKernel", "initialSubsetA", partitions[0].initialSubset);
-	max_set_uint64t(actions, "GraphCliqueDFEKernel", "initialSubsetB", partitions[1].initialSubset);
+	max_set_uint64t(actions, "GraphCliqueDFEKernel", "initialSubset0", partitions[0].initialSubset);
+	max_set_uint64t(actions, "GraphCliqueDFEKernel", "initialSubset1", partitions[1].initialSubset);
+	max_set_uint64t(actions, "GraphCliqueDFEKernel", "initialSubset2", partitions[2].initialSubset);
+	max_set_uint64t(actions, "GraphCliqueDFEKernel", "initialSubset3", partitions[3].initialSubset);
 
 	max_queue_input(actions, "adjMatrixRow", adjMatrix, LOAD_TICK_COUNT * sizeof(uint64_t));
 
 	max_queue_output(actions, "cliqueCount", cliques, computeTickCount * sizeof(uint64_t));
 
 	max_run(engine, actions);
-
-	//Simulation(tickCount, partitions[0].initialSubset, partitions[1].initialSubset, subset, subsetCount * sizeof(uint64_t));
 	
-	for (uint64_t i = 0; i < subsetCount; i++)
-		printf("cliqueCount[%lu] = %lu\n", (unsigned long)i, (unsigned long) cliques[i]);
+	for (int i = 0; i < subsetCount; ++i)
+		printf("cliqueCount[%d] = %lu\n", i, (unsigned long) cliques[i]);
 
 	max_actions_free(actions);
 

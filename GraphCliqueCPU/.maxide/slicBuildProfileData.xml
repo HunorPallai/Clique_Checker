@@ -3,7 +3,7 @@
     <slicBuildProfiles>
         <slicBuildProfile name="Debug">
             <makeMode>debug</makeMode>
-            <maxfileDirectory/>
+            <maxfileDirectory>/home/pallai/Clique_Checker/GraphCliqueDFE/builds/simulation</maxfileDirectory>
         </slicBuildProfile>
         <slicBuildProfile name="Release">
             <makeMode>release</makeMode>

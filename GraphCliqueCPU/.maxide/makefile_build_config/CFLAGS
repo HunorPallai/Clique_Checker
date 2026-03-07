@@ -8,7 +8,7 @@
 -I/opt/maxcompiler-2021.1/include/slic
 -I/include
 -I/opt/MaxPower-2021.1/src/maxpower/kernel/random/runtime
--I/home/pallai/Clique_Checker/GraphCliqueDFE/builds/bitstream
+-I/home/pallai/Clique_Checker/GraphCliqueDFE/builds/simulation
 -fPIC
 -Wall
 -march=native
@@ -18,5 +18,5 @@
 -D__USE_MISC
 -std=gnu99
 -fgnu89-inline
--g
--O3
+-g3
+-O0

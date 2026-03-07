@@ -52,7 +52,6 @@ import java.lang.reflect.Field;
 
 public class Utility {
 	public static final DFEType UINT64 = Kernel.dfeUInt(64);
-	public static final DFEType UINT32 = Kernel.dfeUInt(32);
 	public static final DFEType UINT6 = Kernel.dfeUInt(6);
 	public static final DFEType BOOL = Kernel.dfeBool();
 	public static final DFEVectorType<DFEVar> ADJ_MATRIX_TYPE = 
@@ -409,8 +408,8 @@ public class Utility {
     }
 	
 	public static DFEVar trailingZeroCount(DFEVar value, Kernel kernel) {
-		//return leading0count(Bitops.bitreverse(value), kernel, false, false, true).second;
-		return ctz64(value, kernel);
+		return value === 0 ? 0 : 
+			leading0count(Bitops.bitreverse(value), kernel, false, false, true).second;
 	}
 	
 	public static DFEVar barrelShifter(DFEVar value, DFEVar shift, boolean isLeft, KernelBase<?> base)
