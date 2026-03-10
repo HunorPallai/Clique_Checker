@@ -10,20 +10,24 @@ public class GraphCliqueDFEManager extends XilinxAlveoU250Manager {
 
 	public static final String loaderName = "MatrixLoadKernel";
 	public static final String counterName = "GraphCliqueDFEKernel";
+	public static final String collectorName = "ResultCollectorKernel";
 
 	public GraphCliqueDFEManager(EngineParameters params) {
 		super(params);
 
 		final KernelBlock loader = addKernel(new MatrixLoadKernel(makeKernelParameters(loaderName)));
-		final KernelBlock counter = addKernel(new GraphCliqueDFEKernel(makeKernelParameters(counterName)));
 		
 		final DFELink adjMatrixRowStream = addStreamFromCPU("adjMatrixRow");
 		loader.getInput("adjMatrixRow") <== adjMatrixRowStream;
 
+		final KernelBlock counter = addKernel(new GraphCliqueDFEKernel(makeKernelParameters(counterName)));
 		counter.getInput("adjMatrix") <== loader.getOutput("adjMatrix");
 		
-		final DFELink cliqueCountStream = addStreamToCPU("cliqueCount");
-		cliqueCountStream <== counter.getOutput("cliqueCount");
+		final KernelBlock collector = addKernel(new ResultCollectorKernel(makeKernelParameters(collectorName)));
+		collector.getInput("cliqueCount") <== counter.getOutput("cliqueCount");
+		
+		final DFELink cliqueCountStream = addStreamToCPU("finalCliqueCount");
+		cliqueCountStream <== collector.getOutput("finalCliqueCount");
 		
 	}
 

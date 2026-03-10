@@ -18,5 +18,5 @@
 -D__USE_MISC
 -std=gnu99
 -fgnu89-inline
--g3
--O0
+-g
+-O3

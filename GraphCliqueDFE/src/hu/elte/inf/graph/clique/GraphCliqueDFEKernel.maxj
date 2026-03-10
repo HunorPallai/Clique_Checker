@@ -39,10 +39,10 @@ public class GraphCliqueDFEKernel extends Kernel {
 		DFEVar tickModFourIsTwo = ~hasLastBit & hasSecondToLastBit;
 		DFEVar tickModFourIsThree = hasLastBit & hasSecondToLastBit;
 		
-		DFEVar isFirstSubset0 = tick === 0;
-		DFEVar isFirstSubset1 = tick === 1;
-		DFEVar isFirstSubset2 = tick === 2;
-		DFEVar isFirstSubset3 = tick === 3;
+		DFEVar isFirstSubset0 = tick === constant.var(UINT64, 0);
+		DFEVar isFirstSubset1 = tick === constant.var(UINT64, 1);
+		DFEVar isFirstSubset2 = tick === constant.var(UINT64, 2);
+		DFEVar isFirstSubset3 = tick === constant.var(UINT64, 3);
 		
 		optimization.pushPipeliningFactor(0);
 		
@@ -66,15 +66,10 @@ public class GraphCliqueDFEKernel extends Kernel {
 		DFEVar nextSubset3 = nextGospersSubset(subset3, this);
 		subset3Feedback <== stream.offset(nextSubset3, -LOOP_LATENCY);
 		
-		debug.simPrintf("===============================\n");
-		debug.simPrintf("Tick: %d\n", tick);
-		
 		DFEVar subset = tickModFourIsZero ? subset0 : 
 						(tickModFourIsOne ? subset1 : 
 						(tickModFourIsTwo ? subset2 : 
 											subset3));
-		
-		debug.simPrintf("Subset: %d\n", subset);
 		
 		DFEVar[] indexes = new DFEVar[K];
 		DFEVar remaining = subset;
@@ -94,8 +89,6 @@ public class GraphCliqueDFEKernel extends Kernel {
 		
 		DFEVar increment = (isClique === 1) ? constant.var(UINT64, 1) 
 											: constant.var(UINT64, 0); 
-		
-		debug.simPrintf("Increment value: %d\n", increment);
 		
 		DFEVar count0Feedback = UINT64.newInstance(this);
 		DFEVar prev0Count = isFirstSubset0 ? constant.var(UINT64, 0) : count0Feedback;
@@ -117,11 +110,6 @@ public class GraphCliqueDFEKernel extends Kernel {
 		DFEVar new3Count = prev3Count + (tickModFourIsThree ? increment : constant.var(UINT64, 0)); 
 		count3Feedback <== stream.offset(new3Count, -LOOP_LATENCY);
 		
-		debug.simPrintf("New 0 count: %d\n", new0Count);
-		debug.simPrintf("New 1 count: %d\n", new1Count);
-		debug.simPrintf("New 2 count: %d\n", new2Count);
-		debug.simPrintf("New 3 count: %d\n", new3Count);
-		
 		optimization.popPipeliningFactor();
 		
 		DFEVar activeCount = tickModFourIsZero ? new0Count : 
@@ -130,7 +118,5 @@ public class GraphCliqueDFEKernel extends Kernel {
 								 				 new3Count));
 		
 		io.output("cliqueCount", activeCount, UINT64);
-		
-		debug.simPrintf("===============================\n");
 	}
 }

@@ -128,7 +128,7 @@ int main(int argc, char* argv[]) {
 
 	uint64_t computeTickCount = CONCURRENCY * partitions[0].count;
 	uint64_t totalTickCount = computeTickCount + LOAD_TICK_COUNT;
-	uint64_t* cliques = (uint64_t*) malloc(subsetCount * sizeof(uint64_t));
+	uint64_t* cliques = (uint64_t*) malloc(2 *sizeof(uint64_t));
 	uint64_t* adjMatrix = generateCompleteMatrix(n);
 
 	max_file_t* maxfile = Simulation_init();
@@ -144,13 +144,16 @@ int main(int argc, char* argv[]) {
 	max_set_uint64t(actions, "GraphCliqueDFEKernel", "initialSubset2", partitions[2].initialSubset);
 	max_set_uint64t(actions, "GraphCliqueDFEKernel", "initialSubset3", partitions[3].initialSubset);
 
+	max_set_ticks(actions, "ResultCollectorKernel", computeTickCount);
+	max_set_uint64t(actions, "ResultCollectorKernel", "computeTickCount", computeTickCount);
+
 	max_queue_input(actions, "adjMatrixRow", adjMatrix, LOAD_TICK_COUNT * sizeof(uint64_t));
 
-	max_queue_output(actions, "cliqueCount", cliques, computeTickCount * sizeof(uint64_t));
+	max_queue_output(actions, "finalCliqueCount", cliques, 2 * sizeof(uint64_t));
 
 	max_run(engine, actions);
 	
-	for (int i = 0; i < subsetCount; ++i)
+	for (int i = 0; i < 2; ++i)
 		printf("cliqueCount[%d] = %lu\n", i, (unsigned long) cliques[i]);
 
 	max_actions_free(actions);

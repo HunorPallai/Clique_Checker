@@ -17,5 +17,5 @@
 -D_GNU_SOURCE
 -D__USE_MISC
 -std=c++11
--g3
--O0
+-g
+-O3

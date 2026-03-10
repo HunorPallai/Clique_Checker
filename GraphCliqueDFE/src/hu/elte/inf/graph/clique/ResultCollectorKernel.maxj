@@ -1,0 +1,31 @@
+package hu.elte.inf.graph.clique;
+
+import static hu.elte.inf.graph.clique.Utility.UINT64;
+
+import com.maxeler.maxcompiler.v2.kernelcompiler.Kernel;
+import com.maxeler.maxcompiler.v2.kernelcompiler.KernelParameters;
+import com.maxeler.maxcompiler.v2.kernelcompiler.types.base.DFEVar;
+
+public class ResultCollectorKernel extends Kernel {
+
+	protected ResultCollectorKernel(final KernelParameters parameters) {
+		super(parameters);
+		
+		DFEVar computeTickCount = io.scalarInput("computeTickCount", UINT64);
+		
+		DFEVar tick = control.count.simpleCounter(64);
+		
+		DFEVar isLastFourTick = tick >= computeTickCount - constant.var(UINT64, 4);
+		DFEVar isLastTwoTick = tick >= computeTickCount - constant.var(UINT64, 2);
+		DFEVar isLastTick = tick === computeTickCount - constant.var(UINT64, 1);
+		
+		DFEVar cliqueCount = io.input("cliqueCount", UINT64);
+	
+		DFEVar finalCliqueCount = isLastFourTick ? cliqueCount + stream.offset(cliqueCount, -1) +
+								  stream.offset(cliqueCount, -2) + stream.offset(cliqueCount, -3)
+								  : cliqueCount;
+		
+		io.output("finalCliqueCount", finalCliqueCount, UINT64, isLastTwoTick);
+	}
+
+}
