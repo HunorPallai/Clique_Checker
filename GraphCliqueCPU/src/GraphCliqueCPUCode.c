@@ -106,59 +106,77 @@ uint64_t* generateAdjacencyMatrix(int n, double p) {
 }
 
 int main(int argc, char* argv[]) {
-	int n = 6;
-	int k = 3;
+	int n = 42;
+	int k = 5;
 	
 	if (argc >= 3) {
 		n = atoi(argv[1]);
 		k = atoi(argv[2]);
 	}
-	
-	GosperPartition* partitions = (GosperPartition*)malloc(CONCURRENCY * sizeof(GosperPartition));
-	memset(partitions, 0, CONCURRENCY * sizeof(GosperPartition));
-	gospersSplit(k, n, CONCURRENCY, partitions);
 
-	printf("PartA initial subset: %lu\n", (unsigned long) partitions[0].initialSubset);
-	printf("PartB initial subset: %lu\n", (unsigned long) partitions[1].initialSubset);
-	printf("PartC initial subset: %lu\n", (unsigned long) partitions[2].initialSubset);
-	printf("PartD initial subset: %lu\n", (unsigned long) partitions[3].initialSubset);
+	const int num_partitions = NUMBER_OF_KERNELS * KERNEL_INTERNAL_CONCURRENCY;
+	GosperPartition* partitions = (GosperPartition*)malloc( num_partitions * sizeof(GosperPartition));
+	memset(partitions, 0, num_partitions * sizeof(GosperPartition));
+
+	gospersSplit(k, n, num_partitions, partitions);
+
+	for (int i = 0; i < num_partitions; ++i) {
+		printf("Part %d initial subset: %lu, count: %lu\n", i, (unsigned long) partitions[i].initialSubset, (unsigned long) partitions[i].count);
+	}
 
 	uint64_t subsetCount = binomialCoefficient(n, k);
 	printf("Binomial Coefficient n=%d, k=%d: %lu\n", n, k, (unsigned long) subsetCount);
 
-	uint64_t computeTickCount = CONCURRENCY * partitions[0].count;
+	uint64_t computeTickCount = KERNEL_INTERNAL_CONCURRENCY * partitions[0].count;
 	uint64_t totalTickCount = computeTickCount + LOAD_TICK_COUNT;
-	uint64_t* cliques = (uint64_t*) malloc(2 *sizeof(uint64_t));
+
+	uint64_t* cliqueCounts = (uint64_t*) malloc(KERNEL_INTERNAL_CONCURRENCY *sizeof(uint64_t));
+	memset(cliqueCounts, 0, KERNEL_INTERNAL_CONCURRENCY * sizeof(uint64_t));
+
 	uint64_t* adjMatrix = generateCompleteMatrix(n);
 
 	max_file_t* maxfile = Simulation_init();
 	max_engine_t* engine = max_load(maxfile, "*");
 	max_actions_t* actions = max_actions_init(maxfile, "default");
 
-	max_set_ticks(actions, "MatrixLoadKernel", totalTickCount);
-	max_set_uint64t(actions, "MatrixLoadKernel", "loadTickCount", LOAD_TICK_COUNT);
+	//===========
+	max_set_ticks(actions, "InputKernel", totalTickCount);
+	max_set_uint64t(actions, "InputKernel", "loadTickCount", LOAD_TICK_COUNT);
+	//===========
 
-	max_set_ticks(actions, "GraphCliqueDFEKernel", computeTickCount);
-	max_set_uint64t(actions, "GraphCliqueDFEKernel", "initialSubset0", partitions[0].initialSubset);
-	max_set_uint64t(actions, "GraphCliqueDFEKernel", "initialSubset1", partitions[1].initialSubset);
-	max_set_uint64t(actions, "GraphCliqueDFEKernel", "initialSubset2", partitions[2].initialSubset);
-	max_set_uint64t(actions, "GraphCliqueDFEKernel", "initialSubset3", partitions[3].initialSubset);
+	//===========
+	for (int i = 0; i < NUMBER_OF_KERNELS; ++i) {
+		char counterKernelName[64];
+		snprintf(counterKernelName, sizeof(counterKernelName), "GraphCliqueDFEKernel_%d", i);
+		const int currentIdx = i * KERNEL_INTERNAL_CONCURRENCY;
+
+		max_set_ticks(actions, counterKernelName, computeTickCount);
+		max_set_uint64t(actions, counterKernelName, "initialSubset0", partitions[currentIdx].initialSubset);
+		max_set_uint64t(actions, counterKernelName, "initialSubset1", partitions[currentIdx + 1].initialSubset);
+		max_set_uint64t(actions, counterKernelName, "initialSubset2", partitions[currentIdx + 2].initialSubset);
+		max_set_uint64t(actions, counterKernelName, "initialSubset3", partitions[currentIdx + 3].initialSubset);
+	}
+	//===========
 
 	max_set_ticks(actions, "ResultCollectorKernel", computeTickCount);
 	max_set_uint64t(actions, "ResultCollectorKernel", "computeTickCount", computeTickCount);
 
+	//===========
+	//TODO: Change input matrix
 	max_queue_input(actions, "adjMatrixRow", adjMatrix, LOAD_TICK_COUNT * sizeof(uint64_t));
+	//===========
 
-	max_queue_output(actions, "finalCliqueCount", cliques, 2 * sizeof(uint64_t));
+	max_queue_output(actions, "cliqueCount", cliqueCounts, KERNEL_INTERNAL_CONCURRENCY * sizeof(uint64_t));
 
 	max_run(engine, actions);
 	
-	for (int i = 0; i < 2; ++i)
-		printf("cliqueCount[%d] = %lu\n", i, (unsigned long) cliques[i]);
+	for (int i = 0; i < KERNEL_INTERNAL_CONCURRENCY; ++i)
+		printf("cliqueCounts[%d] = %lu\n", i, (unsigned long) cliqueCounts[i]);
 
 	max_actions_free(actions);
 
-	free(cliques);
+	//TODO: Free all matrixes and partitions
+	free(cliqueCounts);
 	free(partitions);
 	free(adjMatrix);
 

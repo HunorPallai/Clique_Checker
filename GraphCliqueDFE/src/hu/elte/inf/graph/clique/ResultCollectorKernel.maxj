@@ -8,7 +8,7 @@ import com.maxeler.maxcompiler.v2.kernelcompiler.types.base.DFEVar;
 
 public class ResultCollectorKernel extends Kernel {
 
-	protected ResultCollectorKernel(final KernelParameters parameters) {
+	protected ResultCollectorKernel(final KernelParameters parameters, final int numOfKernels) {
 		super(parameters);
 		
 		DFEVar computeTickCount = io.scalarInput("computeTickCount", UINT64);
@@ -16,16 +16,19 @@ public class ResultCollectorKernel extends Kernel {
 		DFEVar tick = control.count.simpleCounter(64);
 		
 		DFEVar isLastFourTick = tick >= computeTickCount - constant.var(UINT64, 4);
-		DFEVar isLastTwoTick = tick >= computeTickCount - constant.var(UINT64, 2);
-		DFEVar isLastTick = tick === computeTickCount - constant.var(UINT64, 1);
 		
-		DFEVar cliqueCount = io.input("cliqueCount", UINT64);
-	
-		DFEVar finalCliqueCount = isLastFourTick ? cliqueCount + stream.offset(cliqueCount, -1) +
-								  stream.offset(cliqueCount, -2) + stream.offset(cliqueCount, -3)
-								  : cliqueCount;
+		DFEVar[] cliqueCounts = new DFEVar[numOfKernels];
+		for (int i = 0; i < numOfKernels; ++i) {
+			cliqueCounts[i] = io.input("cliqueCount_" + i, UINT64);
+		}
 		
-		io.output("finalCliqueCount", finalCliqueCount, UINT64, isLastTwoTick);
+		
+		DFEVar cliqueCount = constant.var(UINT64, 0);
+		for (int i = 0; i < numOfKernels; ++i) {
+			cliqueCount += cliqueCounts[i];
+		}
+		
+		io.output("cliqueCount", cliqueCount, UINT64, isLastFourTick);
 	}
 
 }

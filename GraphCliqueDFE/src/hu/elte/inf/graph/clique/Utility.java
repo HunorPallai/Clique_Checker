@@ -1,6 +1,6 @@
 package hu.elte.inf.graph.clique;
 
-import static hu.elte.inf.graph.clique.MatrixLoadKernel.NUM_ROWS;
+import static hu.elte.inf.graph.clique.InputKernel.NUM_ROWS;
 
 import java.util.ArrayList;
 import java.util.List;

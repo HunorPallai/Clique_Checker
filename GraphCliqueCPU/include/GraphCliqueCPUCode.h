@@ -8,7 +8,8 @@
 #ifndef GRAPHCLIQUECPUCODE_H_
 #define GRAPHCLIQUECPUCODE_H_
 
-const int CONCURRENCY = 4;
+const int NUMBER_OF_KERNELS = 16;
+const int KERNEL_INTERNAL_CONCURRENCY = 4;
 const uint64_t LOAD_TICK_COUNT = 64;
 
 typedef struct {

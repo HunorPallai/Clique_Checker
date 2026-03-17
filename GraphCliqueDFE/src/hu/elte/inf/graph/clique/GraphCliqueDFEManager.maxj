@@ -8,26 +8,39 @@ import com.maxeler.platform.max5.manager.XilinxAlveoU250Manager;
 
 public class GraphCliqueDFEManager extends XilinxAlveoU250Manager {
 
-	public static final String loaderName = "MatrixLoadKernel";
-	public static final String counterName = "GraphCliqueDFEKernel";
-	public static final String collectorName = "ResultCollectorKernel";
+	public static final String inputKernelName = "InputKernel";
+	public static final String counterKernelPrefix = "GraphCliqueDFEKernel";
+	public static final String collectorKernelName = "ResultCollectorKernel";
+	
+	public static final int COUNTER_KERNEL_COUNT = 16;
 
 	public GraphCliqueDFEManager(EngineParameters params) {
 		super(params);
 
-		final KernelBlock loader = addKernel(new MatrixLoadKernel(makeKernelParameters(loaderName)));
+		final KernelBlock inputKernel = addKernel(new InputKernel(makeKernelParameters(inputKernelName), COUNTER_KERNEL_COUNT));
+		final KernelBlock collectorKernel = addKernel(new ResultCollectorKernel(makeKernelParameters(collectorKernelName), COUNTER_KERNEL_COUNT));
+		final KernelBlock[] counterKernels = new KernelBlock[COUNTER_KERNEL_COUNT];
 		
-		final DFELink adjMatrixRowStream = addStreamFromCPU("adjMatrixRow");
-		loader.getInput("adjMatrixRow") <== adjMatrixRowStream;
+		for (int i = 0; i < COUNTER_KERNEL_COUNT; ++i) {
+			counterKernels[i] = addKernel(new GraphCliqueDFEKernel(makeKernelParameters(counterKernelPrefix + "_" + i)));
+		}
 
-		final KernelBlock counter = addKernel(new GraphCliqueDFEKernel(makeKernelParameters(counterName)));
-		counter.getInput("adjMatrix") <== loader.getOutput("adjMatrix");
+		final DFELink adjMatrixRowStream = addStreamFromCPU("adjMatrixRow");
+		inputKernel.getInput("adjMatrixRow") <== adjMatrixRowStream;
+
 		
-		final KernelBlock collector = addKernel(new ResultCollectorKernel(makeKernelParameters(collectorName)));
-		collector.getInput("cliqueCount") <== counter.getOutput("cliqueCount");
+		for (int i = 0; i < COUNTER_KERNEL_COUNT; ++i) {
+			counterKernels[i].getInput("adjMatrix") <== inputKernel.getOutput("adjMatrix_" + i);
+		}
 		
-		final DFELink cliqueCountStream = addStreamToCPU("finalCliqueCount");
-		cliqueCountStream <== collector.getOutput("finalCliqueCount");
+	
+		for (int i = 0; i < COUNTER_KERNEL_COUNT; ++i) {
+			collectorKernel.getInput("cliqueCount_" + i) <== counterKernels[i].getOutput("cliqueCount");
+		}
+		
+		
+		final DFELink cliqueCountStream = addStreamToCPU("cliqueCount");
+		cliqueCountStream <== collectorKernel.getOutput("cliqueCount");
 		
 	}
 

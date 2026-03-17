@@ -19,26 +19,180 @@ extern "C" {
 /**
  * \brief Basic static function for the interface 'default'.
  * 
- * \param [in] ticks_GraphCliqueDFEKernel The number of ticks for which kernel "GraphCliqueDFEKernel" will run.
- * \param [in] ticks_MatrixLoadKernel The number of ticks for which kernel "MatrixLoadKernel" will run.
- * \param [in] inscalar_GraphCliqueDFEKernel_initialSubset0 Input scalar parameter "GraphCliqueDFEKernel.initialSubset0".
- * \param [in] inscalar_GraphCliqueDFEKernel_initialSubset1 Input scalar parameter "GraphCliqueDFEKernel.initialSubset1".
- * \param [in] inscalar_GraphCliqueDFEKernel_initialSubset2 Input scalar parameter "GraphCliqueDFEKernel.initialSubset2".
- * \param [in] inscalar_GraphCliqueDFEKernel_initialSubset3 Input scalar parameter "GraphCliqueDFEKernel.initialSubset3".
- * \param [in] inscalar_MatrixLoadKernel_loadTickCount Input scalar parameter "MatrixLoadKernel.loadTickCount".
+ * \param [in] ticks_GraphCliqueDFEKernel_0 The number of ticks for which kernel "GraphCliqueDFEKernel_0" will run.
+ * \param [in] ticks_GraphCliqueDFEKernel_1 The number of ticks for which kernel "GraphCliqueDFEKernel_1" will run.
+ * \param [in] ticks_GraphCliqueDFEKernel_10 The number of ticks for which kernel "GraphCliqueDFEKernel_10" will run.
+ * \param [in] ticks_GraphCliqueDFEKernel_11 The number of ticks for which kernel "GraphCliqueDFEKernel_11" will run.
+ * \param [in] ticks_GraphCliqueDFEKernel_12 The number of ticks for which kernel "GraphCliqueDFEKernel_12" will run.
+ * \param [in] ticks_GraphCliqueDFEKernel_13 The number of ticks for which kernel "GraphCliqueDFEKernel_13" will run.
+ * \param [in] ticks_GraphCliqueDFEKernel_14 The number of ticks for which kernel "GraphCliqueDFEKernel_14" will run.
+ * \param [in] ticks_GraphCliqueDFEKernel_15 The number of ticks for which kernel "GraphCliqueDFEKernel_15" will run.
+ * \param [in] ticks_GraphCliqueDFEKernel_2 The number of ticks for which kernel "GraphCliqueDFEKernel_2" will run.
+ * \param [in] ticks_GraphCliqueDFEKernel_3 The number of ticks for which kernel "GraphCliqueDFEKernel_3" will run.
+ * \param [in] ticks_GraphCliqueDFEKernel_4 The number of ticks for which kernel "GraphCliqueDFEKernel_4" will run.
+ * \param [in] ticks_GraphCliqueDFEKernel_5 The number of ticks for which kernel "GraphCliqueDFEKernel_5" will run.
+ * \param [in] ticks_GraphCliqueDFEKernel_6 The number of ticks for which kernel "GraphCliqueDFEKernel_6" will run.
+ * \param [in] ticks_GraphCliqueDFEKernel_7 The number of ticks for which kernel "GraphCliqueDFEKernel_7" will run.
+ * \param [in] ticks_GraphCliqueDFEKernel_8 The number of ticks for which kernel "GraphCliqueDFEKernel_8" will run.
+ * \param [in] ticks_GraphCliqueDFEKernel_9 The number of ticks for which kernel "GraphCliqueDFEKernel_9" will run.
+ * \param [in] ticks_InputKernel The number of ticks for which kernel "InputKernel" will run.
+ * \param [in] ticks_ResultCollectorKernel The number of ticks for which kernel "ResultCollectorKernel" will run.
+ * \param [in] inscalar_GraphCliqueDFEKernel_0_initialSubset0 Input scalar parameter "GraphCliqueDFEKernel_0.initialSubset0".
+ * \param [in] inscalar_GraphCliqueDFEKernel_0_initialSubset1 Input scalar parameter "GraphCliqueDFEKernel_0.initialSubset1".
+ * \param [in] inscalar_GraphCliqueDFEKernel_0_initialSubset2 Input scalar parameter "GraphCliqueDFEKernel_0.initialSubset2".
+ * \param [in] inscalar_GraphCliqueDFEKernel_0_initialSubset3 Input scalar parameter "GraphCliqueDFEKernel_0.initialSubset3".
+ * \param [in] inscalar_GraphCliqueDFEKernel_1_initialSubset0 Input scalar parameter "GraphCliqueDFEKernel_1.initialSubset0".
+ * \param [in] inscalar_GraphCliqueDFEKernel_1_initialSubset1 Input scalar parameter "GraphCliqueDFEKernel_1.initialSubset1".
+ * \param [in] inscalar_GraphCliqueDFEKernel_1_initialSubset2 Input scalar parameter "GraphCliqueDFEKernel_1.initialSubset2".
+ * \param [in] inscalar_GraphCliqueDFEKernel_1_initialSubset3 Input scalar parameter "GraphCliqueDFEKernel_1.initialSubset3".
+ * \param [in] inscalar_GraphCliqueDFEKernel_10_initialSubset0 Input scalar parameter "GraphCliqueDFEKernel_10.initialSubset0".
+ * \param [in] inscalar_GraphCliqueDFEKernel_10_initialSubset1 Input scalar parameter "GraphCliqueDFEKernel_10.initialSubset1".
+ * \param [in] inscalar_GraphCliqueDFEKernel_10_initialSubset2 Input scalar parameter "GraphCliqueDFEKernel_10.initialSubset2".
+ * \param [in] inscalar_GraphCliqueDFEKernel_10_initialSubset3 Input scalar parameter "GraphCliqueDFEKernel_10.initialSubset3".
+ * \param [in] inscalar_GraphCliqueDFEKernel_11_initialSubset0 Input scalar parameter "GraphCliqueDFEKernel_11.initialSubset0".
+ * \param [in] inscalar_GraphCliqueDFEKernel_11_initialSubset1 Input scalar parameter "GraphCliqueDFEKernel_11.initialSubset1".
+ * \param [in] inscalar_GraphCliqueDFEKernel_11_initialSubset2 Input scalar parameter "GraphCliqueDFEKernel_11.initialSubset2".
+ * \param [in] inscalar_GraphCliqueDFEKernel_11_initialSubset3 Input scalar parameter "GraphCliqueDFEKernel_11.initialSubset3".
+ * \param [in] inscalar_GraphCliqueDFEKernel_12_initialSubset0 Input scalar parameter "GraphCliqueDFEKernel_12.initialSubset0".
+ * \param [in] inscalar_GraphCliqueDFEKernel_12_initialSubset1 Input scalar parameter "GraphCliqueDFEKernel_12.initialSubset1".
+ * \param [in] inscalar_GraphCliqueDFEKernel_12_initialSubset2 Input scalar parameter "GraphCliqueDFEKernel_12.initialSubset2".
+ * \param [in] inscalar_GraphCliqueDFEKernel_12_initialSubset3 Input scalar parameter "GraphCliqueDFEKernel_12.initialSubset3".
+ * \param [in] inscalar_GraphCliqueDFEKernel_13_initialSubset0 Input scalar parameter "GraphCliqueDFEKernel_13.initialSubset0".
+ * \param [in] inscalar_GraphCliqueDFEKernel_13_initialSubset1 Input scalar parameter "GraphCliqueDFEKernel_13.initialSubset1".
+ * \param [in] inscalar_GraphCliqueDFEKernel_13_initialSubset2 Input scalar parameter "GraphCliqueDFEKernel_13.initialSubset2".
+ * \param [in] inscalar_GraphCliqueDFEKernel_13_initialSubset3 Input scalar parameter "GraphCliqueDFEKernel_13.initialSubset3".
+ * \param [in] inscalar_GraphCliqueDFEKernel_14_initialSubset0 Input scalar parameter "GraphCliqueDFEKernel_14.initialSubset0".
+ * \param [in] inscalar_GraphCliqueDFEKernel_14_initialSubset1 Input scalar parameter "GraphCliqueDFEKernel_14.initialSubset1".
+ * \param [in] inscalar_GraphCliqueDFEKernel_14_initialSubset2 Input scalar parameter "GraphCliqueDFEKernel_14.initialSubset2".
+ * \param [in] inscalar_GraphCliqueDFEKernel_14_initialSubset3 Input scalar parameter "GraphCliqueDFEKernel_14.initialSubset3".
+ * \param [in] inscalar_GraphCliqueDFEKernel_15_initialSubset0 Input scalar parameter "GraphCliqueDFEKernel_15.initialSubset0".
+ * \param [in] inscalar_GraphCliqueDFEKernel_15_initialSubset1 Input scalar parameter "GraphCliqueDFEKernel_15.initialSubset1".
+ * \param [in] inscalar_GraphCliqueDFEKernel_15_initialSubset2 Input scalar parameter "GraphCliqueDFEKernel_15.initialSubset2".
+ * \param [in] inscalar_GraphCliqueDFEKernel_15_initialSubset3 Input scalar parameter "GraphCliqueDFEKernel_15.initialSubset3".
+ * \param [in] inscalar_GraphCliqueDFEKernel_2_initialSubset0 Input scalar parameter "GraphCliqueDFEKernel_2.initialSubset0".
+ * \param [in] inscalar_GraphCliqueDFEKernel_2_initialSubset1 Input scalar parameter "GraphCliqueDFEKernel_2.initialSubset1".
+ * \param [in] inscalar_GraphCliqueDFEKernel_2_initialSubset2 Input scalar parameter "GraphCliqueDFEKernel_2.initialSubset2".
+ * \param [in] inscalar_GraphCliqueDFEKernel_2_initialSubset3 Input scalar parameter "GraphCliqueDFEKernel_2.initialSubset3".
+ * \param [in] inscalar_GraphCliqueDFEKernel_3_initialSubset0 Input scalar parameter "GraphCliqueDFEKernel_3.initialSubset0".
+ * \param [in] inscalar_GraphCliqueDFEKernel_3_initialSubset1 Input scalar parameter "GraphCliqueDFEKernel_3.initialSubset1".
+ * \param [in] inscalar_GraphCliqueDFEKernel_3_initialSubset2 Input scalar parameter "GraphCliqueDFEKernel_3.initialSubset2".
+ * \param [in] inscalar_GraphCliqueDFEKernel_3_initialSubset3 Input scalar parameter "GraphCliqueDFEKernel_3.initialSubset3".
+ * \param [in] inscalar_GraphCliqueDFEKernel_4_initialSubset0 Input scalar parameter "GraphCliqueDFEKernel_4.initialSubset0".
+ * \param [in] inscalar_GraphCliqueDFEKernel_4_initialSubset1 Input scalar parameter "GraphCliqueDFEKernel_4.initialSubset1".
+ * \param [in] inscalar_GraphCliqueDFEKernel_4_initialSubset2 Input scalar parameter "GraphCliqueDFEKernel_4.initialSubset2".
+ * \param [in] inscalar_GraphCliqueDFEKernel_4_initialSubset3 Input scalar parameter "GraphCliqueDFEKernel_4.initialSubset3".
+ * \param [in] inscalar_GraphCliqueDFEKernel_5_initialSubset0 Input scalar parameter "GraphCliqueDFEKernel_5.initialSubset0".
+ * \param [in] inscalar_GraphCliqueDFEKernel_5_initialSubset1 Input scalar parameter "GraphCliqueDFEKernel_5.initialSubset1".
+ * \param [in] inscalar_GraphCliqueDFEKernel_5_initialSubset2 Input scalar parameter "GraphCliqueDFEKernel_5.initialSubset2".
+ * \param [in] inscalar_GraphCliqueDFEKernel_5_initialSubset3 Input scalar parameter "GraphCliqueDFEKernel_5.initialSubset3".
+ * \param [in] inscalar_GraphCliqueDFEKernel_6_initialSubset0 Input scalar parameter "GraphCliqueDFEKernel_6.initialSubset0".
+ * \param [in] inscalar_GraphCliqueDFEKernel_6_initialSubset1 Input scalar parameter "GraphCliqueDFEKernel_6.initialSubset1".
+ * \param [in] inscalar_GraphCliqueDFEKernel_6_initialSubset2 Input scalar parameter "GraphCliqueDFEKernel_6.initialSubset2".
+ * \param [in] inscalar_GraphCliqueDFEKernel_6_initialSubset3 Input scalar parameter "GraphCliqueDFEKernel_6.initialSubset3".
+ * \param [in] inscalar_GraphCliqueDFEKernel_7_initialSubset0 Input scalar parameter "GraphCliqueDFEKernel_7.initialSubset0".
+ * \param [in] inscalar_GraphCliqueDFEKernel_7_initialSubset1 Input scalar parameter "GraphCliqueDFEKernel_7.initialSubset1".
+ * \param [in] inscalar_GraphCliqueDFEKernel_7_initialSubset2 Input scalar parameter "GraphCliqueDFEKernel_7.initialSubset2".
+ * \param [in] inscalar_GraphCliqueDFEKernel_7_initialSubset3 Input scalar parameter "GraphCliqueDFEKernel_7.initialSubset3".
+ * \param [in] inscalar_GraphCliqueDFEKernel_8_initialSubset0 Input scalar parameter "GraphCliqueDFEKernel_8.initialSubset0".
+ * \param [in] inscalar_GraphCliqueDFEKernel_8_initialSubset1 Input scalar parameter "GraphCliqueDFEKernel_8.initialSubset1".
+ * \param [in] inscalar_GraphCliqueDFEKernel_8_initialSubset2 Input scalar parameter "GraphCliqueDFEKernel_8.initialSubset2".
+ * \param [in] inscalar_GraphCliqueDFEKernel_8_initialSubset3 Input scalar parameter "GraphCliqueDFEKernel_8.initialSubset3".
+ * \param [in] inscalar_GraphCliqueDFEKernel_9_initialSubset0 Input scalar parameter "GraphCliqueDFEKernel_9.initialSubset0".
+ * \param [in] inscalar_GraphCliqueDFEKernel_9_initialSubset1 Input scalar parameter "GraphCliqueDFEKernel_9.initialSubset1".
+ * \param [in] inscalar_GraphCliqueDFEKernel_9_initialSubset2 Input scalar parameter "GraphCliqueDFEKernel_9.initialSubset2".
+ * \param [in] inscalar_GraphCliqueDFEKernel_9_initialSubset3 Input scalar parameter "GraphCliqueDFEKernel_9.initialSubset3".
+ * \param [in] inscalar_InputKernel_loadTickCount Input scalar parameter "InputKernel.loadTickCount".
+ * \param [in] inscalar_ResultCollectorKernel_computeTickCount Input scalar parameter "ResultCollectorKernel.computeTickCount".
  * \param [in] instream_adjMatrixRow Stream "adjMatrixRow".
  * \param [in] instream_size_adjMatrixRow The size of the stream instream_adjMatrixRow in bytes.
  * \param [out] outstream_cliqueCount Stream "cliqueCount".
  * \param [in] outstream_size_cliqueCount The size of the stream outstream_cliqueCount in bytes.
  */
 void Simulation(
-	uint64_t ticks_GraphCliqueDFEKernel,
-	uint64_t ticks_MatrixLoadKernel,
-	uint64_t inscalar_GraphCliqueDFEKernel_initialSubset0,
-	uint64_t inscalar_GraphCliqueDFEKernel_initialSubset1,
-	uint64_t inscalar_GraphCliqueDFEKernel_initialSubset2,
-	uint64_t inscalar_GraphCliqueDFEKernel_initialSubset3,
-	uint64_t inscalar_MatrixLoadKernel_loadTickCount,
+	uint64_t ticks_GraphCliqueDFEKernel_0,
+	uint64_t ticks_GraphCliqueDFEKernel_1,
+	uint64_t ticks_GraphCliqueDFEKernel_10,
+	uint64_t ticks_GraphCliqueDFEKernel_11,
+	uint64_t ticks_GraphCliqueDFEKernel_12,
+	uint64_t ticks_GraphCliqueDFEKernel_13,
+	uint64_t ticks_GraphCliqueDFEKernel_14,
+	uint64_t ticks_GraphCliqueDFEKernel_15,
+	uint64_t ticks_GraphCliqueDFEKernel_2,
+	uint64_t ticks_GraphCliqueDFEKernel_3,
+	uint64_t ticks_GraphCliqueDFEKernel_4,
+	uint64_t ticks_GraphCliqueDFEKernel_5,
+	uint64_t ticks_GraphCliqueDFEKernel_6,
+	uint64_t ticks_GraphCliqueDFEKernel_7,
+	uint64_t ticks_GraphCliqueDFEKernel_8,
+	uint64_t ticks_GraphCliqueDFEKernel_9,
+	uint64_t ticks_InputKernel,
+	uint64_t ticks_ResultCollectorKernel,
+	uint64_t inscalar_GraphCliqueDFEKernel_0_initialSubset0,
+	uint64_t inscalar_GraphCliqueDFEKernel_0_initialSubset1,
+	uint64_t inscalar_GraphCliqueDFEKernel_0_initialSubset2,
+	uint64_t inscalar_GraphCliqueDFEKernel_0_initialSubset3,
+	uint64_t inscalar_GraphCliqueDFEKernel_1_initialSubset0,
+	uint64_t inscalar_GraphCliqueDFEKernel_1_initialSubset1,
+	uint64_t inscalar_GraphCliqueDFEKernel_1_initialSubset2,
+	uint64_t inscalar_GraphCliqueDFEKernel_1_initialSubset3,
+	uint64_t inscalar_GraphCliqueDFEKernel_10_initialSubset0,
+	uint64_t inscalar_GraphCliqueDFEKernel_10_initialSubset1,
+	uint64_t inscalar_GraphCliqueDFEKernel_10_initialSubset2,
+	uint64_t inscalar_GraphCliqueDFEKernel_10_initialSubset3,
+	uint64_t inscalar_GraphCliqueDFEKernel_11_initialSubset0,
+	uint64_t inscalar_GraphCliqueDFEKernel_11_initialSubset1,
+	uint64_t inscalar_GraphCliqueDFEKernel_11_initialSubset2,
+	uint64_t inscalar_GraphCliqueDFEKernel_11_initialSubset3,
+	uint64_t inscalar_GraphCliqueDFEKernel_12_initialSubset0,
+	uint64_t inscalar_GraphCliqueDFEKernel_12_initialSubset1,
+	uint64_t inscalar_GraphCliqueDFEKernel_12_initialSubset2,
+	uint64_t inscalar_GraphCliqueDFEKernel_12_initialSubset3,
+	uint64_t inscalar_GraphCliqueDFEKernel_13_initialSubset0,
+	uint64_t inscalar_GraphCliqueDFEKernel_13_initialSubset1,
+	uint64_t inscalar_GraphCliqueDFEKernel_13_initialSubset2,
+	uint64_t inscalar_GraphCliqueDFEKernel_13_initialSubset3,
+	uint64_t inscalar_GraphCliqueDFEKernel_14_initialSubset0,
+	uint64_t inscalar_GraphCliqueDFEKernel_14_initialSubset1,
+	uint64_t inscalar_GraphCliqueDFEKernel_14_initialSubset2,
+	uint64_t inscalar_GraphCliqueDFEKernel_14_initialSubset3,
+	uint64_t inscalar_GraphCliqueDFEKernel_15_initialSubset0,
+	uint64_t inscalar_GraphCliqueDFEKernel_15_initialSubset1,
+	uint64_t inscalar_GraphCliqueDFEKernel_15_initialSubset2,
+	uint64_t inscalar_GraphCliqueDFEKernel_15_initialSubset3,
+	uint64_t inscalar_GraphCliqueDFEKernel_2_initialSubset0,
+	uint64_t inscalar_GraphCliqueDFEKernel_2_initialSubset1,
+	uint64_t inscalar_GraphCliqueDFEKernel_2_initialSubset2,
+	uint64_t inscalar_GraphCliqueDFEKernel_2_initialSubset3,
+	uint64_t inscalar_GraphCliqueDFEKernel_3_initialSubset0,
+	uint64_t inscalar_GraphCliqueDFEKernel_3_initialSubset1,
+	uint64_t inscalar_GraphCliqueDFEKernel_3_initialSubset2,
+	uint64_t inscalar_GraphCliqueDFEKernel_3_initialSubset3,
+	uint64_t inscalar_GraphCliqueDFEKernel_4_initialSubset0,
+	uint64_t inscalar_GraphCliqueDFEKernel_4_initialSubset1,
+	uint64_t inscalar_GraphCliqueDFEKernel_4_initialSubset2,
+	uint64_t inscalar_GraphCliqueDFEKernel_4_initialSubset3,
+	uint64_t inscalar_GraphCliqueDFEKernel_5_initialSubset0,
+	uint64_t inscalar_GraphCliqueDFEKernel_5_initialSubset1,
+	uint64_t inscalar_GraphCliqueDFEKernel_5_initialSubset2,
+	uint64_t inscalar_GraphCliqueDFEKernel_5_initialSubset3,
+	uint64_t inscalar_GraphCliqueDFEKernel_6_initialSubset0,
+	uint64_t inscalar_GraphCliqueDFEKernel_6_initialSubset1,
+	uint64_t inscalar_GraphCliqueDFEKernel_6_initialSubset2,
+	uint64_t inscalar_GraphCliqueDFEKernel_6_initialSubset3,
+	uint64_t inscalar_GraphCliqueDFEKernel_7_initialSubset0,
+	uint64_t inscalar_GraphCliqueDFEKernel_7_initialSubset1,
+	uint64_t inscalar_GraphCliqueDFEKernel_7_initialSubset2,
+	uint64_t inscalar_GraphCliqueDFEKernel_7_initialSubset3,
+	uint64_t inscalar_GraphCliqueDFEKernel_8_initialSubset0,
+	uint64_t inscalar_GraphCliqueDFEKernel_8_initialSubset1,
+	uint64_t inscalar_GraphCliqueDFEKernel_8_initialSubset2,
+	uint64_t inscalar_GraphCliqueDFEKernel_8_initialSubset3,
+	uint64_t inscalar_GraphCliqueDFEKernel_9_initialSubset0,
+	uint64_t inscalar_GraphCliqueDFEKernel_9_initialSubset1,
+	uint64_t inscalar_GraphCliqueDFEKernel_9_initialSubset2,
+	uint64_t inscalar_GraphCliqueDFEKernel_9_initialSubset3,
+	uint64_t inscalar_InputKernel_loadTickCount,
+	uint64_t inscalar_ResultCollectorKernel_computeTickCount,
 	const void *instream_adjMatrixRow,
 	size_t instream_size_adjMatrixRow,
 	void *outstream_cliqueCount,
@@ -52,13 +206,90 @@ void Simulation(
  * note that one of these *must* be called, so that associated memory can be released.
  * 
  * 
- * \param [in] ticks_GraphCliqueDFEKernel The number of ticks for which kernel "GraphCliqueDFEKernel" will run.
- * \param [in] ticks_MatrixLoadKernel The number of ticks for which kernel "MatrixLoadKernel" will run.
- * \param [in] inscalar_GraphCliqueDFEKernel_initialSubset0 Input scalar parameter "GraphCliqueDFEKernel.initialSubset0".
- * \param [in] inscalar_GraphCliqueDFEKernel_initialSubset1 Input scalar parameter "GraphCliqueDFEKernel.initialSubset1".
- * \param [in] inscalar_GraphCliqueDFEKernel_initialSubset2 Input scalar parameter "GraphCliqueDFEKernel.initialSubset2".
- * \param [in] inscalar_GraphCliqueDFEKernel_initialSubset3 Input scalar parameter "GraphCliqueDFEKernel.initialSubset3".
- * \param [in] inscalar_MatrixLoadKernel_loadTickCount Input scalar parameter "MatrixLoadKernel.loadTickCount".
+ * \param [in] ticks_GraphCliqueDFEKernel_0 The number of ticks for which kernel "GraphCliqueDFEKernel_0" will run.
+ * \param [in] ticks_GraphCliqueDFEKernel_1 The number of ticks for which kernel "GraphCliqueDFEKernel_1" will run.
+ * \param [in] ticks_GraphCliqueDFEKernel_10 The number of ticks for which kernel "GraphCliqueDFEKernel_10" will run.
+ * \param [in] ticks_GraphCliqueDFEKernel_11 The number of ticks for which kernel "GraphCliqueDFEKernel_11" will run.
+ * \param [in] ticks_GraphCliqueDFEKernel_12 The number of ticks for which kernel "GraphCliqueDFEKernel_12" will run.
+ * \param [in] ticks_GraphCliqueDFEKernel_13 The number of ticks for which kernel "GraphCliqueDFEKernel_13" will run.
+ * \param [in] ticks_GraphCliqueDFEKernel_14 The number of ticks for which kernel "GraphCliqueDFEKernel_14" will run.
+ * \param [in] ticks_GraphCliqueDFEKernel_15 The number of ticks for which kernel "GraphCliqueDFEKernel_15" will run.
+ * \param [in] ticks_GraphCliqueDFEKernel_2 The number of ticks for which kernel "GraphCliqueDFEKernel_2" will run.
+ * \param [in] ticks_GraphCliqueDFEKernel_3 The number of ticks for which kernel "GraphCliqueDFEKernel_3" will run.
+ * \param [in] ticks_GraphCliqueDFEKernel_4 The number of ticks for which kernel "GraphCliqueDFEKernel_4" will run.
+ * \param [in] ticks_GraphCliqueDFEKernel_5 The number of ticks for which kernel "GraphCliqueDFEKernel_5" will run.
+ * \param [in] ticks_GraphCliqueDFEKernel_6 The number of ticks for which kernel "GraphCliqueDFEKernel_6" will run.
+ * \param [in] ticks_GraphCliqueDFEKernel_7 The number of ticks for which kernel "GraphCliqueDFEKernel_7" will run.
+ * \param [in] ticks_GraphCliqueDFEKernel_8 The number of ticks for which kernel "GraphCliqueDFEKernel_8" will run.
+ * \param [in] ticks_GraphCliqueDFEKernel_9 The number of ticks for which kernel "GraphCliqueDFEKernel_9" will run.
+ * \param [in] ticks_InputKernel The number of ticks for which kernel "InputKernel" will run.
+ * \param [in] ticks_ResultCollectorKernel The number of ticks for which kernel "ResultCollectorKernel" will run.
+ * \param [in] inscalar_GraphCliqueDFEKernel_0_initialSubset0 Input scalar parameter "GraphCliqueDFEKernel_0.initialSubset0".
+ * \param [in] inscalar_GraphCliqueDFEKernel_0_initialSubset1 Input scalar parameter "GraphCliqueDFEKernel_0.initialSubset1".
+ * \param [in] inscalar_GraphCliqueDFEKernel_0_initialSubset2 Input scalar parameter "GraphCliqueDFEKernel_0.initialSubset2".
+ * \param [in] inscalar_GraphCliqueDFEKernel_0_initialSubset3 Input scalar parameter "GraphCliqueDFEKernel_0.initialSubset3".
+ * \param [in] inscalar_GraphCliqueDFEKernel_1_initialSubset0 Input scalar parameter "GraphCliqueDFEKernel_1.initialSubset0".
+ * \param [in] inscalar_GraphCliqueDFEKernel_1_initialSubset1 Input scalar parameter "GraphCliqueDFEKernel_1.initialSubset1".
+ * \param [in] inscalar_GraphCliqueDFEKernel_1_initialSubset2 Input scalar parameter "GraphCliqueDFEKernel_1.initialSubset2".
+ * \param [in] inscalar_GraphCliqueDFEKernel_1_initialSubset3 Input scalar parameter "GraphCliqueDFEKernel_1.initialSubset3".
+ * \param [in] inscalar_GraphCliqueDFEKernel_10_initialSubset0 Input scalar parameter "GraphCliqueDFEKernel_10.initialSubset0".
+ * \param [in] inscalar_GraphCliqueDFEKernel_10_initialSubset1 Input scalar parameter "GraphCliqueDFEKernel_10.initialSubset1".
+ * \param [in] inscalar_GraphCliqueDFEKernel_10_initialSubset2 Input scalar parameter "GraphCliqueDFEKernel_10.initialSubset2".
+ * \param [in] inscalar_GraphCliqueDFEKernel_10_initialSubset3 Input scalar parameter "GraphCliqueDFEKernel_10.initialSubset3".
+ * \param [in] inscalar_GraphCliqueDFEKernel_11_initialSubset0 Input scalar parameter "GraphCliqueDFEKernel_11.initialSubset0".
+ * \param [in] inscalar_GraphCliqueDFEKernel_11_initialSubset1 Input scalar parameter "GraphCliqueDFEKernel_11.initialSubset1".
+ * \param [in] inscalar_GraphCliqueDFEKernel_11_initialSubset2 Input scalar parameter "GraphCliqueDFEKernel_11.initialSubset2".
+ * \param [in] inscalar_GraphCliqueDFEKernel_11_initialSubset3 Input scalar parameter "GraphCliqueDFEKernel_11.initialSubset3".
+ * \param [in] inscalar_GraphCliqueDFEKernel_12_initialSubset0 Input scalar parameter "GraphCliqueDFEKernel_12.initialSubset0".
+ * \param [in] inscalar_GraphCliqueDFEKernel_12_initialSubset1 Input scalar parameter "GraphCliqueDFEKernel_12.initialSubset1".
+ * \param [in] inscalar_GraphCliqueDFEKernel_12_initialSubset2 Input scalar parameter "GraphCliqueDFEKernel_12.initialSubset2".
+ * \param [in] inscalar_GraphCliqueDFEKernel_12_initialSubset3 Input scalar parameter "GraphCliqueDFEKernel_12.initialSubset3".
+ * \param [in] inscalar_GraphCliqueDFEKernel_13_initialSubset0 Input scalar parameter "GraphCliqueDFEKernel_13.initialSubset0".
+ * \param [in] inscalar_GraphCliqueDFEKernel_13_initialSubset1 Input scalar parameter "GraphCliqueDFEKernel_13.initialSubset1".
+ * \param [in] inscalar_GraphCliqueDFEKernel_13_initialSubset2 Input scalar parameter "GraphCliqueDFEKernel_13.initialSubset2".
+ * \param [in] inscalar_GraphCliqueDFEKernel_13_initialSubset3 Input scalar parameter "GraphCliqueDFEKernel_13.initialSubset3".
+ * \param [in] inscalar_GraphCliqueDFEKernel_14_initialSubset0 Input scalar parameter "GraphCliqueDFEKernel_14.initialSubset0".
+ * \param [in] inscalar_GraphCliqueDFEKernel_14_initialSubset1 Input scalar parameter "GraphCliqueDFEKernel_14.initialSubset1".
+ * \param [in] inscalar_GraphCliqueDFEKernel_14_initialSubset2 Input scalar parameter "GraphCliqueDFEKernel_14.initialSubset2".
+ * \param [in] inscalar_GraphCliqueDFEKernel_14_initialSubset3 Input scalar parameter "GraphCliqueDFEKernel_14.initialSubset3".
+ * \param [in] inscalar_GraphCliqueDFEKernel_15_initialSubset0 Input scalar parameter "GraphCliqueDFEKernel_15.initialSubset0".
+ * \param [in] inscalar_GraphCliqueDFEKernel_15_initialSubset1 Input scalar parameter "GraphCliqueDFEKernel_15.initialSubset1".
+ * \param [in] inscalar_GraphCliqueDFEKernel_15_initialSubset2 Input scalar parameter "GraphCliqueDFEKernel_15.initialSubset2".
+ * \param [in] inscalar_GraphCliqueDFEKernel_15_initialSubset3 Input scalar parameter "GraphCliqueDFEKernel_15.initialSubset3".
+ * \param [in] inscalar_GraphCliqueDFEKernel_2_initialSubset0 Input scalar parameter "GraphCliqueDFEKernel_2.initialSubset0".
+ * \param [in] inscalar_GraphCliqueDFEKernel_2_initialSubset1 Input scalar parameter "GraphCliqueDFEKernel_2.initialSubset1".
+ * \param [in] inscalar_GraphCliqueDFEKernel_2_initialSubset2 Input scalar parameter "GraphCliqueDFEKernel_2.initialSubset2".
+ * \param [in] inscalar_GraphCliqueDFEKernel_2_initialSubset3 Input scalar parameter "GraphCliqueDFEKernel_2.initialSubset3".
+ * \param [in] inscalar_GraphCliqueDFEKernel_3_initialSubset0 Input scalar parameter "GraphCliqueDFEKernel_3.initialSubset0".
+ * \param [in] inscalar_GraphCliqueDFEKernel_3_initialSubset1 Input scalar parameter "GraphCliqueDFEKernel_3.initialSubset1".
+ * \param [in] inscalar_GraphCliqueDFEKernel_3_initialSubset2 Input scalar parameter "GraphCliqueDFEKernel_3.initialSubset2".
+ * \param [in] inscalar_GraphCliqueDFEKernel_3_initialSubset3 Input scalar parameter "GraphCliqueDFEKernel_3.initialSubset3".
+ * \param [in] inscalar_GraphCliqueDFEKernel_4_initialSubset0 Input scalar parameter "GraphCliqueDFEKernel_4.initialSubset0".
+ * \param [in] inscalar_GraphCliqueDFEKernel_4_initialSubset1 Input scalar parameter "GraphCliqueDFEKernel_4.initialSubset1".
+ * \param [in] inscalar_GraphCliqueDFEKernel_4_initialSubset2 Input scalar parameter "GraphCliqueDFEKernel_4.initialSubset2".
+ * \param [in] inscalar_GraphCliqueDFEKernel_4_initialSubset3 Input scalar parameter "GraphCliqueDFEKernel_4.initialSubset3".
+ * \param [in] inscalar_GraphCliqueDFEKernel_5_initialSubset0 Input scalar parameter "GraphCliqueDFEKernel_5.initialSubset0".
+ * \param [in] inscalar_GraphCliqueDFEKernel_5_initialSubset1 Input scalar parameter "GraphCliqueDFEKernel_5.initialSubset1".
+ * \param [in] inscalar_GraphCliqueDFEKernel_5_initialSubset2 Input scalar parameter "GraphCliqueDFEKernel_5.initialSubset2".
+ * \param [in] inscalar_GraphCliqueDFEKernel_5_initialSubset3 Input scalar parameter "GraphCliqueDFEKernel_5.initialSubset3".
+ * \param [in] inscalar_GraphCliqueDFEKernel_6_initialSubset0 Input scalar parameter "GraphCliqueDFEKernel_6.initialSubset0".
+ * \param [in] inscalar_GraphCliqueDFEKernel_6_initialSubset1 Input scalar parameter "GraphCliqueDFEKernel_6.initialSubset1".
+ * \param [in] inscalar_GraphCliqueDFEKernel_6_initialSubset2 Input scalar parameter "GraphCliqueDFEKernel_6.initialSubset2".
+ * \param [in] inscalar_GraphCliqueDFEKernel_6_initialSubset3 Input scalar parameter "GraphCliqueDFEKernel_6.initialSubset3".
+ * \param [in] inscalar_GraphCliqueDFEKernel_7_initialSubset0 Input scalar parameter "GraphCliqueDFEKernel_7.initialSubset0".
+ * \param [in] inscalar_GraphCliqueDFEKernel_7_initialSubset1 Input scalar parameter "GraphCliqueDFEKernel_7.initialSubset1".
+ * \param [in] inscalar_GraphCliqueDFEKernel_7_initialSubset2 Input scalar parameter "GraphCliqueDFEKernel_7.initialSubset2".
+ * \param [in] inscalar_GraphCliqueDFEKernel_7_initialSubset3 Input scalar parameter "GraphCliqueDFEKernel_7.initialSubset3".
+ * \param [in] inscalar_GraphCliqueDFEKernel_8_initialSubset0 Input scalar parameter "GraphCliqueDFEKernel_8.initialSubset0".
+ * \param [in] inscalar_GraphCliqueDFEKernel_8_initialSubset1 Input scalar parameter "GraphCliqueDFEKernel_8.initialSubset1".
+ * \param [in] inscalar_GraphCliqueDFEKernel_8_initialSubset2 Input scalar parameter "GraphCliqueDFEKernel_8.initialSubset2".
+ * \param [in] inscalar_GraphCliqueDFEKernel_8_initialSubset3 Input scalar parameter "GraphCliqueDFEKernel_8.initialSubset3".
+ * \param [in] inscalar_GraphCliqueDFEKernel_9_initialSubset0 Input scalar parameter "GraphCliqueDFEKernel_9.initialSubset0".
+ * \param [in] inscalar_GraphCliqueDFEKernel_9_initialSubset1 Input scalar parameter "GraphCliqueDFEKernel_9.initialSubset1".
+ * \param [in] inscalar_GraphCliqueDFEKernel_9_initialSubset2 Input scalar parameter "GraphCliqueDFEKernel_9.initialSubset2".
+ * \param [in] inscalar_GraphCliqueDFEKernel_9_initialSubset3 Input scalar parameter "GraphCliqueDFEKernel_9.initialSubset3".
+ * \param [in] inscalar_InputKernel_loadTickCount Input scalar parameter "InputKernel.loadTickCount".
+ * \param [in] inscalar_ResultCollectorKernel_computeTickCount Input scalar parameter "ResultCollectorKernel.computeTickCount".
  * \param [in] instream_adjMatrixRow Stream "adjMatrixRow".
  * \param [in] instream_size_adjMatrixRow The size of the stream instream_adjMatrixRow in bytes.
  * \param [out] outstream_cliqueCount Stream "cliqueCount".
@@ -66,13 +297,90 @@ void Simulation(
  * \return A handle on the execution status, or NULL in case of error.
  */
 max_run_t *Simulation_nonblock(
-	uint64_t ticks_GraphCliqueDFEKernel,
-	uint64_t ticks_MatrixLoadKernel,
-	uint64_t inscalar_GraphCliqueDFEKernel_initialSubset0,
-	uint64_t inscalar_GraphCliqueDFEKernel_initialSubset1,
-	uint64_t inscalar_GraphCliqueDFEKernel_initialSubset2,
-	uint64_t inscalar_GraphCliqueDFEKernel_initialSubset3,
-	uint64_t inscalar_MatrixLoadKernel_loadTickCount,
+	uint64_t ticks_GraphCliqueDFEKernel_0,
+	uint64_t ticks_GraphCliqueDFEKernel_1,
+	uint64_t ticks_GraphCliqueDFEKernel_10,
+	uint64_t ticks_GraphCliqueDFEKernel_11,
+	uint64_t ticks_GraphCliqueDFEKernel_12,
+	uint64_t ticks_GraphCliqueDFEKernel_13,
+	uint64_t ticks_GraphCliqueDFEKernel_14,
+	uint64_t ticks_GraphCliqueDFEKernel_15,
+	uint64_t ticks_GraphCliqueDFEKernel_2,
+	uint64_t ticks_GraphCliqueDFEKernel_3,
+	uint64_t ticks_GraphCliqueDFEKernel_4,
+	uint64_t ticks_GraphCliqueDFEKernel_5,
+	uint64_t ticks_GraphCliqueDFEKernel_6,
+	uint64_t ticks_GraphCliqueDFEKernel_7,
+	uint64_t ticks_GraphCliqueDFEKernel_8,
+	uint64_t ticks_GraphCliqueDFEKernel_9,
+	uint64_t ticks_InputKernel,
+	uint64_t ticks_ResultCollectorKernel,
+	uint64_t inscalar_GraphCliqueDFEKernel_0_initialSubset0,
+	uint64_t inscalar_GraphCliqueDFEKernel_0_initialSubset1,
+	uint64_t inscalar_GraphCliqueDFEKernel_0_initialSubset2,
+	uint64_t inscalar_GraphCliqueDFEKernel_0_initialSubset3,
+	uint64_t inscalar_GraphCliqueDFEKernel_1_initialSubset0,
+	uint64_t inscalar_GraphCliqueDFEKernel_1_initialSubset1,
+	uint64_t inscalar_GraphCliqueDFEKernel_1_initialSubset2,
+	uint64_t inscalar_GraphCliqueDFEKernel_1_initialSubset3,
+	uint64_t inscalar_GraphCliqueDFEKernel_10_initialSubset0,
+	uint64_t inscalar_GraphCliqueDFEKernel_10_initialSubset1,
+	uint64_t inscalar_GraphCliqueDFEKernel_10_initialSubset2,
+	uint64_t inscalar_GraphCliqueDFEKernel_10_initialSubset3,
+	uint64_t inscalar_GraphCliqueDFEKernel_11_initialSubset0,
+	uint64_t inscalar_GraphCliqueDFEKernel_11_initialSubset1,
+	uint64_t inscalar_GraphCliqueDFEKernel_11_initialSubset2,
+	uint64_t inscalar_GraphCliqueDFEKernel_11_initialSubset3,
+	uint64_t inscalar_GraphCliqueDFEKernel_12_initialSubset0,
+	uint64_t inscalar_GraphCliqueDFEKernel_12_initialSubset1,
+	uint64_t inscalar_GraphCliqueDFEKernel_12_initialSubset2,
+	uint64_t inscalar_GraphCliqueDFEKernel_12_initialSubset3,
+	uint64_t inscalar_GraphCliqueDFEKernel_13_initialSubset0,
+	uint64_t inscalar_GraphCliqueDFEKernel_13_initialSubset1,
+	uint64_t inscalar_GraphCliqueDFEKernel_13_initialSubset2,
+	uint64_t inscalar_GraphCliqueDFEKernel_13_initialSubset3,
+	uint64_t inscalar_GraphCliqueDFEKernel_14_initialSubset0,
+	uint64_t inscalar_GraphCliqueDFEKernel_14_initialSubset1,
+	uint64_t inscalar_GraphCliqueDFEKernel_14_initialSubset2,
+	uint64_t inscalar_GraphCliqueDFEKernel_14_initialSubset3,
+	uint64_t inscalar_GraphCliqueDFEKernel_15_initialSubset0,
+	uint64_t inscalar_GraphCliqueDFEKernel_15_initialSubset1,
+	uint64_t inscalar_GraphCliqueDFEKernel_15_initialSubset2,
+	uint64_t inscalar_GraphCliqueDFEKernel_15_initialSubset3,
+	uint64_t inscalar_GraphCliqueDFEKernel_2_initialSubset0,
+	uint64_t inscalar_GraphCliqueDFEKernel_2_initialSubset1,
+	uint64_t inscalar_GraphCliqueDFEKernel_2_initialSubset2,
+	uint64_t inscalar_GraphCliqueDFEKernel_2_initialSubset3,
+	uint64_t inscalar_GraphCliqueDFEKernel_3_initialSubset0,
+	uint64_t inscalar_GraphCliqueDFEKernel_3_initialSubset1,
+	uint64_t inscalar_GraphCliqueDFEKernel_3_initialSubset2,
+	uint64_t inscalar_GraphCliqueDFEKernel_3_initialSubset3,
+	uint64_t inscalar_GraphCliqueDFEKernel_4_initialSubset0,
+	uint64_t inscalar_GraphCliqueDFEKernel_4_initialSubset1,
+	uint64_t inscalar_GraphCliqueDFEKernel_4_initialSubset2,
+	uint64_t inscalar_GraphCliqueDFEKernel_4_initialSubset3,
+	uint64_t inscalar_GraphCliqueDFEKernel_5_initialSubset0,
+	uint64_t inscalar_GraphCliqueDFEKernel_5_initialSubset1,
+	uint64_t inscalar_GraphCliqueDFEKernel_5_initialSubset2,
+	uint64_t inscalar_GraphCliqueDFEKernel_5_initialSubset3,
+	uint64_t inscalar_GraphCliqueDFEKernel_6_initialSubset0,
+	uint64_t inscalar_GraphCliqueDFEKernel_6_initialSubset1,
+	uint64_t inscalar_GraphCliqueDFEKernel_6_initialSubset2,
+	uint64_t inscalar_GraphCliqueDFEKernel_6_initialSubset3,
+	uint64_t inscalar_GraphCliqueDFEKernel_7_initialSubset0,
+	uint64_t inscalar_GraphCliqueDFEKernel_7_initialSubset1,
+	uint64_t inscalar_GraphCliqueDFEKernel_7_initialSubset2,
+	uint64_t inscalar_GraphCliqueDFEKernel_7_initialSubset3,
+	uint64_t inscalar_GraphCliqueDFEKernel_8_initialSubset0,
+	uint64_t inscalar_GraphCliqueDFEKernel_8_initialSubset1,
+	uint64_t inscalar_GraphCliqueDFEKernel_8_initialSubset2,
+	uint64_t inscalar_GraphCliqueDFEKernel_8_initialSubset3,
+	uint64_t inscalar_GraphCliqueDFEKernel_9_initialSubset0,
+	uint64_t inscalar_GraphCliqueDFEKernel_9_initialSubset1,
+	uint64_t inscalar_GraphCliqueDFEKernel_9_initialSubset2,
+	uint64_t inscalar_GraphCliqueDFEKernel_9_initialSubset3,
+	uint64_t inscalar_InputKernel_loadTickCount,
+	uint64_t inscalar_ResultCollectorKernel_computeTickCount,
 	const void *instream_adjMatrixRow,
 	size_t instream_size_adjMatrixRow,
 	void *outstream_cliqueCount,
@@ -83,13 +391,90 @@ max_run_t *Simulation_nonblock(
  * 
  */
 typedef struct { 
-	uint64_t ticks_GraphCliqueDFEKernel; /**<  [in] The number of ticks for which kernel "GraphCliqueDFEKernel" will run. */
-	uint64_t ticks_MatrixLoadKernel; /**<  [in] The number of ticks for which kernel "MatrixLoadKernel" will run. */
-	uint64_t inscalar_GraphCliqueDFEKernel_initialSubset0; /**<  [in] Input scalar parameter "GraphCliqueDFEKernel.initialSubset0". */
-	uint64_t inscalar_GraphCliqueDFEKernel_initialSubset1; /**<  [in] Input scalar parameter "GraphCliqueDFEKernel.initialSubset1". */
-	uint64_t inscalar_GraphCliqueDFEKernel_initialSubset2; /**<  [in] Input scalar parameter "GraphCliqueDFEKernel.initialSubset2". */
-	uint64_t inscalar_GraphCliqueDFEKernel_initialSubset3; /**<  [in] Input scalar parameter "GraphCliqueDFEKernel.initialSubset3". */
-	uint64_t inscalar_MatrixLoadKernel_loadTickCount; /**<  [in] Input scalar parameter "MatrixLoadKernel.loadTickCount". */
+	uint64_t ticks_GraphCliqueDFEKernel_0; /**<  [in] The number of ticks for which kernel "GraphCliqueDFEKernel_0" will run. */
+	uint64_t ticks_GraphCliqueDFEKernel_1; /**<  [in] The number of ticks for which kernel "GraphCliqueDFEKernel_1" will run. */
+	uint64_t ticks_GraphCliqueDFEKernel_10; /**<  [in] The number of ticks for which kernel "GraphCliqueDFEKernel_10" will run. */
+	uint64_t ticks_GraphCliqueDFEKernel_11; /**<  [in] The number of ticks for which kernel "GraphCliqueDFEKernel_11" will run. */
+	uint64_t ticks_GraphCliqueDFEKernel_12; /**<  [in] The number of ticks for which kernel "GraphCliqueDFEKernel_12" will run. */
+	uint64_t ticks_GraphCliqueDFEKernel_13; /**<  [in] The number of ticks for which kernel "GraphCliqueDFEKernel_13" will run. */
+	uint64_t ticks_GraphCliqueDFEKernel_14; /**<  [in] The number of ticks for which kernel "GraphCliqueDFEKernel_14" will run. */
+	uint64_t ticks_GraphCliqueDFEKernel_15; /**<  [in] The number of ticks for which kernel "GraphCliqueDFEKernel_15" will run. */
+	uint64_t ticks_GraphCliqueDFEKernel_2; /**<  [in] The number of ticks for which kernel "GraphCliqueDFEKernel_2" will run. */
+	uint64_t ticks_GraphCliqueDFEKernel_3; /**<  [in] The number of ticks for which kernel "GraphCliqueDFEKernel_3" will run. */
+	uint64_t ticks_GraphCliqueDFEKernel_4; /**<  [in] The number of ticks for which kernel "GraphCliqueDFEKernel_4" will run. */
+	uint64_t ticks_GraphCliqueDFEKernel_5; /**<  [in] The number of ticks for which kernel "GraphCliqueDFEKernel_5" will run. */
+	uint64_t ticks_GraphCliqueDFEKernel_6; /**<  [in] The number of ticks for which kernel "GraphCliqueDFEKernel_6" will run. */
+	uint64_t ticks_GraphCliqueDFEKernel_7; /**<  [in] The number of ticks for which kernel "GraphCliqueDFEKernel_7" will run. */
+	uint64_t ticks_GraphCliqueDFEKernel_8; /**<  [in] The number of ticks for which kernel "GraphCliqueDFEKernel_8" will run. */
+	uint64_t ticks_GraphCliqueDFEKernel_9; /**<  [in] The number of ticks for which kernel "GraphCliqueDFEKernel_9" will run. */
+	uint64_t ticks_InputKernel; /**<  [in] The number of ticks for which kernel "InputKernel" will run. */
+	uint64_t ticks_ResultCollectorKernel; /**<  [in] The number of ticks for which kernel "ResultCollectorKernel" will run. */
+	uint64_t inscalar_GraphCliqueDFEKernel_0_initialSubset0; /**<  [in] Input scalar parameter "GraphCliqueDFEKernel_0.initialSubset0". */
+	uint64_t inscalar_GraphCliqueDFEKernel_0_initialSubset1; /**<  [in] Input scalar parameter "GraphCliqueDFEKernel_0.initialSubset1". */
+	uint64_t inscalar_GraphCliqueDFEKernel_0_initialSubset2; /**<  [in] Input scalar parameter "GraphCliqueDFEKernel_0.initialSubset2". */
+	uint64_t inscalar_GraphCliqueDFEKernel_0_initialSubset3; /**<  [in] Input scalar parameter "GraphCliqueDFEKernel_0.initialSubset3". */
+	uint64_t inscalar_GraphCliqueDFEKernel_1_initialSubset0; /**<  [in] Input scalar parameter "GraphCliqueDFEKernel_1.initialSubset0". */
+	uint64_t inscalar_GraphCliqueDFEKernel_1_initialSubset1; /**<  [in] Input scalar parameter "GraphCliqueDFEKernel_1.initialSubset1". */
+	uint64_t inscalar_GraphCliqueDFEKernel_1_initialSubset2; /**<  [in] Input scalar parameter "GraphCliqueDFEKernel_1.initialSubset2". */
+	uint64_t inscalar_GraphCliqueDFEKernel_1_initialSubset3; /**<  [in] Input scalar parameter "GraphCliqueDFEKernel_1.initialSubset3". */
+	uint64_t inscalar_GraphCliqueDFEKernel_10_initialSubset0; /**<  [in] Input scalar parameter "GraphCliqueDFEKernel_10.initialSubset0". */
+	uint64_t inscalar_GraphCliqueDFEKernel_10_initialSubset1; /**<  [in] Input scalar parameter "GraphCliqueDFEKernel_10.initialSubset1". */
+	uint64_t inscalar_GraphCliqueDFEKernel_10_initialSubset2; /**<  [in] Input scalar parameter "GraphCliqueDFEKernel_10.initialSubset2". */
+	uint64_t inscalar_GraphCliqueDFEKernel_10_initialSubset3; /**<  [in] Input scalar parameter "GraphCliqueDFEKernel_10.initialSubset3". */
+	uint64_t inscalar_GraphCliqueDFEKernel_11_initialSubset0; /**<  [in] Input scalar parameter "GraphCliqueDFEKernel_11.initialSubset0". */
+	uint64_t inscalar_GraphCliqueDFEKernel_11_initialSubset1; /**<  [in] Input scalar parameter "GraphCliqueDFEKernel_11.initialSubset1". */
+	uint64_t inscalar_GraphCliqueDFEKernel_11_initialSubset2; /**<  [in] Input scalar parameter "GraphCliqueDFEKernel_11.initialSubset2". */
+	uint64_t inscalar_GraphCliqueDFEKernel_11_initialSubset3; /**<  [in] Input scalar parameter "GraphCliqueDFEKernel_11.initialSubset3". */
+	uint64_t inscalar_GraphCliqueDFEKernel_12_initialSubset0; /**<  [in] Input scalar parameter "GraphCliqueDFEKernel_12.initialSubset0". */
+	uint64_t inscalar_GraphCliqueDFEKernel_12_initialSubset1; /**<  [in] Input scalar parameter "GraphCliqueDFEKernel_12.initialSubset1". */
+	uint64_t inscalar_GraphCliqueDFEKernel_12_initialSubset2; /**<  [in] Input scalar parameter "GraphCliqueDFEKernel_12.initialSubset2". */
+	uint64_t inscalar_GraphCliqueDFEKernel_12_initialSubset3; /**<  [in] Input scalar parameter "GraphCliqueDFEKernel_12.initialSubset3". */
+	uint64_t inscalar_GraphCliqueDFEKernel_13_initialSubset0; /**<  [in] Input scalar parameter "GraphCliqueDFEKernel_13.initialSubset0". */
+	uint64_t inscalar_GraphCliqueDFEKernel_13_initialSubset1; /**<  [in] Input scalar parameter "GraphCliqueDFEKernel_13.initialSubset1". */
+	uint64_t inscalar_GraphCliqueDFEKernel_13_initialSubset2; /**<  [in] Input scalar parameter "GraphCliqueDFEKernel_13.initialSubset2". */
+	uint64_t inscalar_GraphCliqueDFEKernel_13_initialSubset3; /**<  [in] Input scalar parameter "GraphCliqueDFEKernel_13.initialSubset3". */
+	uint64_t inscalar_GraphCliqueDFEKernel_14_initialSubset0; /**<  [in] Input scalar parameter "GraphCliqueDFEKernel_14.initialSubset0". */
+	uint64_t inscalar_GraphCliqueDFEKernel_14_initialSubset1; /**<  [in] Input scalar parameter "GraphCliqueDFEKernel_14.initialSubset1". */
+	uint64_t inscalar_GraphCliqueDFEKernel_14_initialSubset2; /**<  [in] Input scalar parameter "GraphCliqueDFEKernel_14.initialSubset2". */
+	uint64_t inscalar_GraphCliqueDFEKernel_14_initialSubset3; /**<  [in] Input scalar parameter "GraphCliqueDFEKernel_14.initialSubset3". */
+	uint64_t inscalar_GraphCliqueDFEKernel_15_initialSubset0; /**<  [in] Input scalar parameter "GraphCliqueDFEKernel_15.initialSubset0". */
+	uint64_t inscalar_GraphCliqueDFEKernel_15_initialSubset1; /**<  [in] Input scalar parameter "GraphCliqueDFEKernel_15.initialSubset1". */
+	uint64_t inscalar_GraphCliqueDFEKernel_15_initialSubset2; /**<  [in] Input scalar parameter "GraphCliqueDFEKernel_15.initialSubset2". */
+	uint64_t inscalar_GraphCliqueDFEKernel_15_initialSubset3; /**<  [in] Input scalar parameter "GraphCliqueDFEKernel_15.initialSubset3". */
+	uint64_t inscalar_GraphCliqueDFEKernel_2_initialSubset0; /**<  [in] Input scalar parameter "GraphCliqueDFEKernel_2.initialSubset0". */
+	uint64_t inscalar_GraphCliqueDFEKernel_2_initialSubset1; /**<  [in] Input scalar parameter "GraphCliqueDFEKernel_2.initialSubset1". */
+	uint64_t inscalar_GraphCliqueDFEKernel_2_initialSubset2; /**<  [in] Input scalar parameter "GraphCliqueDFEKernel_2.initialSubset2". */
+	uint64_t inscalar_GraphCliqueDFEKernel_2_initialSubset3; /**<  [in] Input scalar parameter "GraphCliqueDFEKernel_2.initialSubset3". */
+	uint64_t inscalar_GraphCliqueDFEKernel_3_initialSubset0; /**<  [in] Input scalar parameter "GraphCliqueDFEKernel_3.initialSubset0". */
+	uint64_t inscalar_GraphCliqueDFEKernel_3_initialSubset1; /**<  [in] Input scalar parameter "GraphCliqueDFEKernel_3.initialSubset1". */
+	uint64_t inscalar_GraphCliqueDFEKernel_3_initialSubset2; /**<  [in] Input scalar parameter "GraphCliqueDFEKernel_3.initialSubset2". */
+	uint64_t inscalar_GraphCliqueDFEKernel_3_initialSubset3; /**<  [in] Input scalar parameter "GraphCliqueDFEKernel_3.initialSubset3". */
+	uint64_t inscalar_GraphCliqueDFEKernel_4_initialSubset0; /**<  [in] Input scalar parameter "GraphCliqueDFEKernel_4.initialSubset0". */
+	uint64_t inscalar_GraphCliqueDFEKernel_4_initialSubset1; /**<  [in] Input scalar parameter "GraphCliqueDFEKernel_4.initialSubset1". */
+	uint64_t inscalar_GraphCliqueDFEKernel_4_initialSubset2; /**<  [in] Input scalar parameter "GraphCliqueDFEKernel_4.initialSubset2". */
+	uint64_t inscalar_GraphCliqueDFEKernel_4_initialSubset3; /**<  [in] Input scalar parameter "GraphCliqueDFEKernel_4.initialSubset3". */
+	uint64_t inscalar_GraphCliqueDFEKernel_5_initialSubset0; /**<  [in] Input scalar parameter "GraphCliqueDFEKernel_5.initialSubset0". */
+	uint64_t inscalar_GraphCliqueDFEKernel_5_initialSubset1; /**<  [in] Input scalar parameter "GraphCliqueDFEKernel_5.initialSubset1". */
+	uint64_t inscalar_GraphCliqueDFEKernel_5_initialSubset2; /**<  [in] Input scalar parameter "GraphCliqueDFEKernel_5.initialSubset2". */
+	uint64_t inscalar_GraphCliqueDFEKernel_5_initialSubset3; /**<  [in] Input scalar parameter "GraphCliqueDFEKernel_5.initialSubset3". */
+	uint64_t inscalar_GraphCliqueDFEKernel_6_initialSubset0; /**<  [in] Input scalar parameter "GraphCliqueDFEKernel_6.initialSubset0". */
+	uint64_t inscalar_GraphCliqueDFEKernel_6_initialSubset1; /**<  [in] Input scalar parameter "GraphCliqueDFEKernel_6.initialSubset1". */
+	uint64_t inscalar_GraphCliqueDFEKernel_6_initialSubset2; /**<  [in] Input scalar parameter "GraphCliqueDFEKernel_6.initialSubset2". */
+	uint64_t inscalar_GraphCliqueDFEKernel_6_initialSubset3; /**<  [in] Input scalar parameter "GraphCliqueDFEKernel_6.initialSubset3". */
+	uint64_t inscalar_GraphCliqueDFEKernel_7_initialSubset0; /**<  [in] Input scalar parameter "GraphCliqueDFEKernel_7.initialSubset0". */
+	uint64_t inscalar_GraphCliqueDFEKernel_7_initialSubset1; /**<  [in] Input scalar parameter "GraphCliqueDFEKernel_7.initialSubset1". */
+	uint64_t inscalar_GraphCliqueDFEKernel_7_initialSubset2; /**<  [in] Input scalar parameter "GraphCliqueDFEKernel_7.initialSubset2". */
+	uint64_t inscalar_GraphCliqueDFEKernel_7_initialSubset3; /**<  [in] Input scalar parameter "GraphCliqueDFEKernel_7.initialSubset3". */
+	uint64_t inscalar_GraphCliqueDFEKernel_8_initialSubset0; /**<  [in] Input scalar parameter "GraphCliqueDFEKernel_8.initialSubset0". */
+	uint64_t inscalar_GraphCliqueDFEKernel_8_initialSubset1; /**<  [in] Input scalar parameter "GraphCliqueDFEKernel_8.initialSubset1". */
+	uint64_t inscalar_GraphCliqueDFEKernel_8_initialSubset2; /**<  [in] Input scalar parameter "GraphCliqueDFEKernel_8.initialSubset2". */
+	uint64_t inscalar_GraphCliqueDFEKernel_8_initialSubset3; /**<  [in] Input scalar parameter "GraphCliqueDFEKernel_8.initialSubset3". */
+	uint64_t inscalar_GraphCliqueDFEKernel_9_initialSubset0; /**<  [in] Input scalar parameter "GraphCliqueDFEKernel_9.initialSubset0". */
+	uint64_t inscalar_GraphCliqueDFEKernel_9_initialSubset1; /**<  [in] Input scalar parameter "GraphCliqueDFEKernel_9.initialSubset1". */
+	uint64_t inscalar_GraphCliqueDFEKernel_9_initialSubset2; /**<  [in] Input scalar parameter "GraphCliqueDFEKernel_9.initialSubset2". */
+	uint64_t inscalar_GraphCliqueDFEKernel_9_initialSubset3; /**<  [in] Input scalar parameter "GraphCliqueDFEKernel_9.initialSubset3". */
+	uint64_t inscalar_InputKernel_loadTickCount; /**<  [in] Input scalar parameter "InputKernel.loadTickCount". */
+	uint64_t inscalar_ResultCollectorKernel_computeTickCount; /**<  [in] Input scalar parameter "ResultCollectorKernel.computeTickCount". */
 	const void *instream_adjMatrixRow; /**<  [in] Stream "adjMatrixRow". */
 	size_t instream_size_adjMatrixRow; /**<  [in] The size of the stream instream_adjMatrixRow in bytes. */
 	void *outstream_cliqueCount; /**<  [out] Stream "cliqueCount". */
