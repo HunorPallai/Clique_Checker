@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
+#include <time.h>
 
 #include "GraphCliqueCPUCode.h"
 #include "Simulation.h"
@@ -106,13 +107,14 @@ uint64_t* generateAdjacencyMatrix(int n, double p) {
 }
 
 int main(int argc, char* argv[]) {
-	int n = 42;
+	int n = 43;
 	int k = 5;
 	
 	if (argc >= 3) {
 		n = atoi(argv[1]);
 		k = atoi(argv[2]);
 	}
+	const clock_t startTime = clock();
 
 	const int num_partitions = NUMBER_OF_KERNELS * KERNEL_INTERNAL_CONCURRENCY;
 	GosperPartition* partitions = (GosperPartition*)malloc( num_partitions * sizeof(GosperPartition));
@@ -121,14 +123,17 @@ int main(int argc, char* argv[]) {
 	gospersSplit(k, n, num_partitions, partitions);
 
 	for (int i = 0; i < num_partitions; ++i) {
-		printf("Part %d initial subset: %lu, count: %lu\n", i, (unsigned long) partitions[i].initialSubset, (unsigned long) partitions[i].count);
+		printf("Part %d initial subset: %lu, count: %lu, limit: %lu\n", i,
+				(unsigned long) partitions[i].initialSubset,
+				(unsigned long) partitions[i].count,
+				(unsigned long) partitions[i].limit);
 	}
 
 	uint64_t subsetCount = binomialCoefficient(n, k);
 	printf("Binomial Coefficient n=%d, k=%d: %lu\n", n, k, (unsigned long) subsetCount);
 
-	uint64_t computeTickCount = KERNEL_INTERNAL_CONCURRENCY * partitions[0].count;
-	uint64_t totalTickCount = computeTickCount + LOAD_TICK_COUNT;
+	uint64_t maxComputeTickCount = KERNEL_INTERNAL_CONCURRENCY * partitions[0].count;
+	uint64_t totalTickCount = maxComputeTickCount + LOAD_TICK_COUNT;
 
 	uint64_t* cliqueCounts = (uint64_t*) malloc(KERNEL_INTERNAL_CONCURRENCY *sizeof(uint64_t));
 	memset(cliqueCounts, 0, KERNEL_INTERNAL_CONCURRENCY * sizeof(uint64_t));
@@ -149,17 +154,31 @@ int main(int argc, char* argv[]) {
 		char counterKernelName[64];
 		snprintf(counterKernelName, sizeof(counterKernelName), "GraphCliqueDFEKernel_%d", i);
 		const int currentIdx = i * KERNEL_INTERNAL_CONCURRENCY;
+//		int computeTickCount = 0;
+//		for (int j = 0; j < KERNEL_INTERNAL_CONCURRENCY; ++i) {
+//			computeTickCount += partitions[currentIdx + j].count;
+//		}
 
-		max_set_ticks(actions, counterKernelName, computeTickCount);
+		max_set_ticks(actions, counterKernelName, maxComputeTickCount);
 		max_set_uint64t(actions, counterKernelName, "initialSubset0", partitions[currentIdx].initialSubset);
 		max_set_uint64t(actions, counterKernelName, "initialSubset1", partitions[currentIdx + 1].initialSubset);
 		max_set_uint64t(actions, counterKernelName, "initialSubset2", partitions[currentIdx + 2].initialSubset);
 		max_set_uint64t(actions, counterKernelName, "initialSubset3", partitions[currentIdx + 3].initialSubset);
+		max_set_uint64t(actions, counterKernelName, "limit0", partitions[currentIdx].limit);
+		max_set_uint64t(actions, counterKernelName, "limit1", partitions[currentIdx + 1].limit);
+		max_set_uint64t(actions, counterKernelName, "limit2", partitions[currentIdx + 2].limit);
+		max_set_uint64t(actions, counterKernelName, "limit3", partitions[currentIdx + 3].limit);
 	}
 	//===========
 
-	max_set_ticks(actions, "ResultCollectorKernel", computeTickCount);
-	max_set_uint64t(actions, "ResultCollectorKernel", "computeTickCount", computeTickCount);
+	max_set_ticks(actions, "PartialCollectorKernel_0", maxComputeTickCount);
+	max_set_uint64t(actions, "PartialCollectorKernel_0", "computeTickCount", maxComputeTickCount);
+
+	max_set_ticks(actions, "PartialCollectorKernel_1", maxComputeTickCount);
+	max_set_uint64t(actions, "PartialCollectorKernel_1", "computeTickCount", maxComputeTickCount);
+
+	max_set_ticks(actions, "FinalCollectorKernel", KERNEL_INTERNAL_CONCURRENCY);
+	max_set_uint64t(actions, "FinalCollectorKernel", "computeTickCount", KERNEL_INTERNAL_CONCURRENCY);
 
 	//===========
 	//TODO: Change input matrix
@@ -168,8 +187,16 @@ int main(int argc, char* argv[]) {
 
 	max_queue_output(actions, "cliqueCount", cliqueCounts, KERNEL_INTERNAL_CONCURRENCY * sizeof(uint64_t));
 
+
+
 	max_run(engine, actions);
 	
+	const clock_t endTime = clock();
+
+	printf("Start time: %lu\n", (unsigned long) startTime);
+	printf("End time: %lu\n", (unsigned long) endTime);
+	//printf("Elapsed time: %lu\n", (unsigned long)(endTime - startTime));
+
 	for (int i = 0; i < KERNEL_INTERNAL_CONCURRENCY; ++i)
 		printf("cliqueCounts[%d] = %lu\n", i, (unsigned long) cliqueCounts[i]);
 

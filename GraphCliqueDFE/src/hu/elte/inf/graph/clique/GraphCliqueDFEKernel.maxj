@@ -26,6 +26,10 @@ public class GraphCliqueDFEKernel extends Kernel {
 		DFEVar initialSubset1 = io.scalarInput("initialSubset1", UINT64);
 		DFEVar initialSubset2 = io.scalarInput("initialSubset2", UINT64);
 		DFEVar initialSubset3 = io.scalarInput("initialSubset3", UINT64);
+		DFEVar limit0 = io.scalarInput("limit0", UINT64);
+		DFEVar limit1 = io.scalarInput("limit1", UINT64);
+		DFEVar limit2 = io.scalarInput("limit2", UINT64);
+		DFEVar limit3 = io.scalarInput("limit3", UINT64);
 		
 		DFEVector<DFEVar> adjMatrixRows = io.input("adjMatrix", ADJ_MATRIX_TYPE);
 		
@@ -71,6 +75,11 @@ public class GraphCliqueDFEKernel extends Kernel {
 						(tickModFourIsTwo ? subset2 : 
 											subset3));
 		
+		DFEVar limit = tickModFourIsZero ? limit0 : 
+					   (tickModFourIsOne ? limit1 : 
+					   (tickModFourIsTwo ? limit2 : 
+						   				   limit3));
+		
 		DFEVar[] indexes = new DFEVar[K];
 		DFEVar remaining = subset;
 		for (int i = 0; i < K; ++i) {
@@ -87,8 +96,9 @@ public class GraphCliqueDFEKernel extends Kernel {
 			isClique = isClique & checkBound;
 		}
 		
-		DFEVar increment = (isClique === 1) ? constant.var(UINT64, 1) 
-											: constant.var(UINT64, 0); 
+		DFEVar increment = (isClique === 1 & subset < limit) ?
+									 constant.var(UINT64, 1) :
+									 constant.var(UINT64, 0); 
 		
 		DFEVar count0Feedback = UINT64.newInstance(this);
 		DFEVar prev0Count = isFirstSubset0 ? constant.var(UINT64, 0) : count0Feedback;
