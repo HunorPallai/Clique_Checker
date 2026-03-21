@@ -107,7 +107,7 @@ uint64_t* generateAdjacencyMatrix(int n, double p) {
 }
 
 int main(int argc, char* argv[]) {
-	int n = 43;
+	int n = 8;//43;
 	int k = 5;
 	
 	if (argc >= 3) {
@@ -154,10 +154,6 @@ int main(int argc, char* argv[]) {
 		char counterKernelName[64];
 		snprintf(counterKernelName, sizeof(counterKernelName), "GraphCliqueDFEKernel_%d", i);
 		const int currentIdx = i * KERNEL_INTERNAL_CONCURRENCY;
-//		int computeTickCount = 0;
-//		for (int j = 0; j < KERNEL_INTERNAL_CONCURRENCY; ++i) {
-//			computeTickCount += partitions[currentIdx + j].count;
-//		}
 
 		max_set_ticks(actions, counterKernelName, maxComputeTickCount);
 		max_set_uint64t(actions, counterKernelName, "initialSubset0", partitions[currentIdx].initialSubset);
@@ -171,14 +167,16 @@ int main(int argc, char* argv[]) {
 	}
 	//===========
 
-	max_set_ticks(actions, "PartialCollectorKernel_0", maxComputeTickCount);
-	max_set_uint64t(actions, "PartialCollectorKernel_0", "computeTickCount", maxComputeTickCount);
-
-	max_set_ticks(actions, "PartialCollectorKernel_1", maxComputeTickCount);
-	max_set_uint64t(actions, "PartialCollectorKernel_1", "computeTickCount", maxComputeTickCount);
-
-	max_set_ticks(actions, "FinalCollectorKernel", KERNEL_INTERNAL_CONCURRENCY);
-	max_set_uint64t(actions, "FinalCollectorKernel", "computeTickCount", KERNEL_INTERNAL_CONCURRENCY);
+//	max_set_ticks(actions, "PartialCollectorKernel_0", maxComputeTickCount);
+//	max_set_uint64t(actions, "PartialCollectorKernel_0", "computeTickCount", maxComputeTickCount);
+//
+//	max_set_ticks(actions, "PartialCollectorKernel_1", maxComputeTickCount);
+//	max_set_uint64t(actions, "PartialCollectorKernel_1", "computeTickCount", maxComputeTickCount);
+//
+//	max_set_ticks(actions, "FinalCollectorKernel", KERNEL_INTERNAL_CONCURRENCY);
+//	max_set_uint64t(actions, "FinalCollectorKernel", "computeTickCount", KERNEL_INTERNAL_CONCURRENCY);
+	max_set_ticks(actions, "FinalCollectorKernel", maxComputeTickCount);
+	max_set_uint64t(actions, "FinalCollectorKernel", "computeTickCount", maxComputeTickCount);
 
 	//===========
 	//TODO: Change input matrix
