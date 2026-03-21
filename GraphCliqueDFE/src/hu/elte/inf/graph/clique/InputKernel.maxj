@@ -6,8 +6,8 @@ import com.maxeler.maxcompiler.v2.kernelcompiler.stdlib.Reductions;
 import com.maxeler.maxcompiler.v2.kernelcompiler.types.base.DFEVar;
 import com.maxeler.maxcompiler.v2.kernelcompiler.types.composite.DFEVector;
 
-import static hu.elte.inf.graph.clique.Utility.UINT64;
-import static hu.elte.inf.graph.clique.Utility.ADJ_MATRIX_TYPE;
+import static hu.elte.inf.graph.clique.GraphCliqueDFEKernel.UINT64;
+import static hu.elte.inf.graph.clique.GraphCliqueDFEKernel.ADJ_MATRIX_TYPE;
 
 public class InputKernel extends Kernel {
 	public static final int NUM_ROWS = 64;

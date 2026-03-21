@@ -1,6 +1,6 @@
 package hu.elte.inf.graph.clique;
 
-import static hu.elte.inf.graph.clique.Utility.UINT64;
+import static hu.elte.inf.graph.clique.GraphCliqueDFEKernel.UINT64;
 
 import com.maxeler.maxcompiler.v2.kernelcompiler.Kernel;
 import com.maxeler.maxcompiler.v2.kernelcompiler.KernelParameters;

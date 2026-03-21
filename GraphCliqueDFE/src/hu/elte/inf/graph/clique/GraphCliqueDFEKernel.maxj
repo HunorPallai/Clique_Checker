@@ -2,22 +2,25 @@ package hu.elte.inf.graph.clique;
 
 import com.maxeler.maxcompiler.v2.kernelcompiler.Kernel;
 import com.maxeler.maxcompiler.v2.kernelcompiler.KernelParameters;
+import com.maxeler.maxcompiler.v2.kernelcompiler.stdlib.Bitops;
+import com.maxeler.maxcompiler.v2.kernelcompiler.types.base.DFEType;
 import com.maxeler.maxcompiler.v2.kernelcompiler.types.base.DFEVar;
 import com.maxeler.maxcompiler.v2.kernelcompiler.types.composite.DFEVector;
+import com.maxeler.maxcompiler.v2.kernelcompiler.types.composite.DFEVectorType;
 
-import static hu.elte.inf.graph.clique.Utility.nextGospersSubset;
-import static hu.elte.inf.graph.clique.Utility.trailingZeroCount;
-import static hu.elte.inf.graph.clique.Utility.lookupRow;
-
-import static hu.elte.inf.graph.clique.Utility.UINT64;
-import static hu.elte.inf.graph.clique.Utility.UINT6;
-import static hu.elte.inf.graph.clique.Utility.BOOL;
-import static hu.elte.inf.graph.clique.Utility.ADJ_MATRIX_TYPE;
+import static hu.elte.inf.graph.clique.InputKernel.NUM_ROWS;
+import static hu.elte.inf.graph.clique.Utility.Pair;
 
 public class GraphCliqueDFEKernel extends Kernel {
+	public static final DFEType UINT64 = Kernel.dfeUInt(64);
+	public static final DFEType UINT6 = Kernel.dfeUInt(6);
+	public static final DFEType BOOL = Kernel.dfeBool();
+	public static final DFEVectorType<DFEVar> ADJ_MATRIX_TYPE = 
+			new DFEVectorType<DFEVar>(UINT64, NUM_ROWS);
+	
 	private static final int LOOP_LATENCY = 4;
 	private static final int K = 5;
-
+	
 	@SuppressWarnings("deprecation")
 	public GraphCliqueDFEKernel(final KernelParameters parameters) {
 		super(parameters);
@@ -52,22 +55,22 @@ public class GraphCliqueDFEKernel extends Kernel {
 		
 		DFEVar subset0Feedback = UINT64.newInstance(this);
 		DFEVar subset0 = isFirstSubset0 ? initialSubset0 : subset0Feedback;
-		DFEVar nextSubset0 = nextGospersSubset(subset0, this);
+		DFEVar nextSubset0 = nextGospersSubset(subset0);
 		subset0Feedback <== stream.offset(nextSubset0, -LOOP_LATENCY);
 		
 		DFEVar subset1Feedback = UINT64.newInstance(this);
 		DFEVar subset1 = isFirstSubset1 ? initialSubset1 : subset1Feedback;
-		DFEVar nextSubset1 = nextGospersSubset(subset1, this);
+		DFEVar nextSubset1 = nextGospersSubset(subset1);
 		subset1Feedback <== stream.offset(nextSubset1, -LOOP_LATENCY);
 		
 		DFEVar subset2Feedback = UINT64.newInstance(this);
 		DFEVar subset2 = isFirstSubset2 ? initialSubset2 : subset2Feedback;
-		DFEVar nextSubset2 = nextGospersSubset(subset2, this);
+		DFEVar nextSubset2 = nextGospersSubset(subset2);
 		subset2Feedback <== stream.offset(nextSubset2, -LOOP_LATENCY);
 		
 		DFEVar subset3Feedback = UINT64.newInstance(this);
 		DFEVar subset3 = isFirstSubset3 ? initialSubset3 : subset3Feedback;
-		DFEVar nextSubset3 = nextGospersSubset(subset3, this);
+		DFEVar nextSubset3 = nextGospersSubset(subset3);
 		subset3Feedback <== stream.offset(nextSubset3, -LOOP_LATENCY);
 		
 		DFEVar subset = tickModFourIsZero ? subset0 : 
@@ -83,13 +86,13 @@ public class GraphCliqueDFEKernel extends Kernel {
 		DFEVar[] indexes = new DFEVar[K];
 		DFEVar remaining = subset;
 		for (int i = 0; i < K; ++i) {
-			indexes[i] = trailingZeroCount(remaining, this);
+			indexes[i] = trailingZeroCount(remaining);
 			remaining = remaining & (remaining - 1);
 		}
 		
 		DFEVar isClique = constant.var(BOOL, 1);
 		for (int i = 0; i < K; ++i) {
-			DFEVar row = lookupRow(adjMatrixRows, indexes[i], this);
+			DFEVar row = lookupRow(adjMatrixRows, indexes[i]);
 			DFEVar match = (row & subset) === subset;
 			DFEVar idx = constant.var(UINT6, i);
 			DFEVar checkBound = (idx < K) ? match : constant.var(BOOL, 1);
@@ -128,5 +131,41 @@ public class GraphCliqueDFEKernel extends Kernel {
 								 				 new3Count));
 		
 		io.output("cliqueCount", activeCount, UINT64);
+	}
+	
+	public DFEVar trailingZeroCount(DFEVar value) {
+		Pair<DFEVar, DFEVar> resultPair = Utility.leading0count(Bitops.bitreverse(value), this, false, false, true); 
+		return value === 0 ? 0 : resultPair.getSecond();
+	}
+	
+	public DFEVar nextGospersSubset(DFEVar subset) {
+		DFEVar c = subset & (~subset + 1);
+		DFEVar r = subset + c;
+		DFEVar diff = (subset ^ r) >> 2;
+		DFEVar shiftAmount = trailingZeroCount(c);
+		DFEVar divByC = Utility.barrelShifter(diff, shiftAmount, false, this);
+		return divByC | r;
+	}
+	
+	public DFEVar ctz64(DFEVar value) {
+		DFEVar lowest1Bit = value & (~value + 1);
+		DFEVar result = constant.var(UINT6, 0);
+		for (int i = 0; i < 64; ++i) {
+			DFEVar isBitSet = lowest1Bit.slice(i, 1).cast(BOOL);
+			DFEVar pos = constant.var(UINT6, i);
+			result = result | (isBitSet === 1 ? pos : constant.var(UINT6, 0));
+		}
+		
+		return result;
+	}
+	
+	public DFEVar lookupRow(DFEVector<DFEVar> rows, DFEVar index) {
+		DFEVar result = rows[0];
+		
+		for (int i = 1; i < 64; ++i) {
+			result = (index === constant.var(UINT6, i)) ? rows[i] : result;
+		}
+		
+		return result;
 	}
 }
