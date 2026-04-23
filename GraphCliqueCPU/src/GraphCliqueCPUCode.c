@@ -5,8 +5,8 @@
 #include <time.h>
 
 #include "GraphCliqueCPUCode.h"
-#include "Simulation.h"
-//#include "Bitstream.h"
+//#include "Simulation.h"
+#include "Bitstream.h"
 #include "MaxSLiCInterface.h"
 
 uint64_t binomialCoefficient(const int n, const int k) {
@@ -114,9 +114,9 @@ int main(int argc, char* argv[]) {
 		n = atoi(argv[1]);
 		k = atoi(argv[2]);
 	}
-	const clock_t startTime = clock();
+	const float startTimeBeforePartition = (float)clock()/CLOCKS_PER_SEC;
 
-	const int num_partitions = NUMBER_OF_KERNELS * KERNEL_INTERNAL_CONCURRENCY;
+	const int num_partitions = NUMBER_OF_COUNTER_KERNELS * KERNEL_INTERNAL_CONCURRENCY;
 	GosperPartition* partitions = (GosperPartition*)malloc( num_partitions * sizeof(GosperPartition));
 	memset(partitions, 0, num_partitions * sizeof(GosperPartition));
 
@@ -138,9 +138,9 @@ int main(int argc, char* argv[]) {
 	uint64_t* cliqueCounts = (uint64_t*) malloc(KERNEL_INTERNAL_CONCURRENCY *sizeof(uint64_t));
 	memset(cliqueCounts, 0, KERNEL_INTERNAL_CONCURRENCY * sizeof(uint64_t));
 
-	uint64_t* adjMatrix = generateCompleteMatrix(n);
+	uint64_t* adjMatrix = generateAdjacencyMatrix(n, 0.5);
 
-	max_file_t* maxfile = Simulation_init();
+	max_file_t* maxfile = Bitstream_init();
 	max_engine_t* engine = max_load(maxfile, "*");
 	max_actions_t* actions = max_actions_init(maxfile, "default");
 
@@ -149,15 +149,13 @@ int main(int argc, char* argv[]) {
 	max_set_uint64t(actions, "InputKernel", "loadTickCount", LOAD_TICK_COUNT);
 	//===========
 
+	const float startTimeBeforeInit = (float)clock()/CLOCKS_PER_SEC;
+
 	//===========
-	for (int i = 0; i < NUMBER_OF_KERNELS; ++i) {
+	for (int i = 0; i < NUMBER_OF_COUNTER_KERNELS; ++i) {
 		char counterKernelName[64];
 		snprintf(counterKernelName, sizeof(counterKernelName), "GraphCliqueDFEKernel_%d", i);
 		const int currentIdx = i * KERNEL_INTERNAL_CONCURRENCY;
-//		int computeTickCount = 0;
-//		for (int j = 0; j < KERNEL_INTERNAL_CONCURRENCY; ++i) {
-//			computeTickCount += partitions[currentIdx + j].count;
-//		}
 
 		max_set_ticks(actions, counterKernelName, maxComputeTickCount);
 		max_set_uint64t(actions, counterKernelName, "initialSubset0", partitions[currentIdx].initialSubset);
@@ -171,38 +169,42 @@ int main(int argc, char* argv[]) {
 	}
 	//===========
 
-	max_set_ticks(actions, "PartialCollectorKernel_0", maxComputeTickCount);
-	max_set_uint64t(actions, "PartialCollectorKernel_0", "computeTickCount", maxComputeTickCount);
-
-	max_set_ticks(actions, "PartialCollectorKernel_1", maxComputeTickCount);
-	max_set_uint64t(actions, "PartialCollectorKernel_1", "computeTickCount", maxComputeTickCount);
+	for (int i = 0; i < NUMBER_OF_COLLECTOR_KERNELS; ++i) {
+		char collectorKernelName[64];
+		snprintf(collectorKernelName, sizeof(collectorKernelName), "PartialCollectorKernel_%d", i);
+		max_set_ticks(actions, collectorKernelName, maxComputeTickCount);
+		max_set_uint64t(actions, collectorKernelName, "computeTickCount", maxComputeTickCount);
+	}
 
 	max_set_ticks(actions, "FinalCollectorKernel", KERNEL_INTERNAL_CONCURRENCY);
 	max_set_uint64t(actions, "FinalCollectorKernel", "computeTickCount", KERNEL_INTERNAL_CONCURRENCY);
 
 	//===========
-	//TODO: Change input matrix
 	max_queue_input(actions, "adjMatrixRow", adjMatrix, LOAD_TICK_COUNT * sizeof(uint64_t));
 	//===========
 
 	max_queue_output(actions, "cliqueCount", cliqueCounts, KERNEL_INTERNAL_CONCURRENCY * sizeof(uint64_t));
 
 
+	const float startTimeCalcOnly = (float)clock()/CLOCKS_PER_SEC;
 
 	max_run(engine, actions);
 	
-	const clock_t endTime = clock();
+	const float endTime = (float)clock()/CLOCKS_PER_SEC;
 
-	printf("Start time: %lu\n", (unsigned long) startTime);
-	printf("End time: %lu\n", (unsigned long) endTime);
-	//printf("Elapsed time: %lu\n", (unsigned long)(endTime - startTime));
+	printf("Start time before partition: %f\n", startTimeBeforePartition);
+	printf("Start time before init: %f\n", startTimeBeforeInit);
+	printf("Start time calc only: %f\n", startTimeCalcOnly);
+	printf("End time: %f\n", endTime);
+	printf("Elapsed time since partition: %f\n", (endTime - startTimeBeforePartition));
+	printf("Elapsed time since init: %f\n", (endTime - startTimeBeforeInit));
+	printf("Elapsed time since calc: %f\n", (endTime - startTimeCalcOnly));
 
 	for (int i = 0; i < KERNEL_INTERNAL_CONCURRENCY; ++i)
 		printf("cliqueCounts[%d] = %lu\n", i, (unsigned long) cliqueCounts[i]);
 
 	max_actions_free(actions);
 
-	//TODO: Free all matrixes and partitions
 	free(cliqueCounts);
 	free(partitions);
 	free(adjMatrix);

@@ -1875,7 +1875,7 @@ print([gpc_to_lut(x) for x in gen_gpc(6, 3)])
     public static class NodeKeep extends Node implements OptionallyInlinedLogicNode, ConstantFold
     {
         public NodeKeep(final PhotonDesignData photonDesignData, final String[] array) {
-            super(photonDesignData, array);
+            super();
             this.addInput("a");
             this.addOutput("result");            
         }

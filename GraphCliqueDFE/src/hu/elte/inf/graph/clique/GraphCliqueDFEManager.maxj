@@ -4,6 +4,8 @@ import com.maxeler.maxcompiler.v2.build.EngineParameters;
 import com.maxeler.maxcompiler.v2.managers.custom.DFELink;
 import com.maxeler.maxcompiler.v2.managers.custom.blocks.KernelBlock;
 
+import com.maxeler.platform.max5.manager.BuildConfig;
+import com.maxeler.platform.max5.manager.SynthesisStrategy;
 import com.maxeler.platform.max5.manager.XilinxAlveoU250Manager;
 
 public class GraphCliqueDFEManager extends XilinxAlveoU250Manager {
@@ -13,23 +15,27 @@ public class GraphCliqueDFEManager extends XilinxAlveoU250Manager {
 	public static final String partialCollectorKernelPrefix = "PartialCollectorKernel";
 	public static final String finalCollectorKernelName = "FinalCollectorKernel";
 	
-	public static final int COUNTER_KERNEL_COUNT = 16;
+	public static final int COUNTER_KERNEL_COUNT = 32;
+	public static final int COLLECTOR_KERNEL_COUNT = 4;
+	public static final int COUNTER_KERNEL_PER_COLLECTOR_KERNEL = COUNTER_KERNEL_COUNT / COLLECTOR_KERNEL_COUNT;
 
 	public GraphCliqueDFEManager(EngineParameters params) {
 		super(params);
 
 		final KernelBlock inputKernel = addKernel(new InputKernel(makeKernelParameters(inputKernelName), COUNTER_KERNEL_COUNT));
-		final KernelBlock partialCollectorKernel_0 = addKernel(new ResultCollectorKernel(
-																	makeKernelParameters(partialCollectorKernelPrefix + "_0"),
-																	COUNTER_KERNEL_COUNT / 2, 0));
-		final KernelBlock partialCollectorKernel_1 = addKernel(new ResultCollectorKernel(
-																	makeKernelParameters(partialCollectorKernelPrefix + "_1"),
-																	COUNTER_KERNEL_COUNT / 2, COUNTER_KERNEL_COUNT / 2));
+		
+		final KernelBlock[] partialCollectorKernels = new KernelBlock[COLLECTOR_KERNEL_COUNT];
+		for (int i = 0; i < COLLECTOR_KERNEL_COUNT; ++i) {
+			partialCollectorKernels[i] = addKernel(new ResultCollectorKernel(
+														makeKernelParameters(partialCollectorKernelPrefix + "_" + i),
+														COUNTER_KERNEL_PER_COLLECTOR_KERNEL,
+														i * COUNTER_KERNEL_PER_COLLECTOR_KERNEL));
+		}
 		final KernelBlock finalCollectorKernel = addKernel(new ResultCollectorKernel(makeKernelParameters(
 																	finalCollectorKernelName),
-																	2, COUNTER_KERNEL_COUNT));
+																	COLLECTOR_KERNEL_COUNT,
+																	COUNTER_KERNEL_COUNT));
 		final KernelBlock[] counterKernels = new KernelBlock[COUNTER_KERNEL_COUNT];
-		
 		for (int i = 0; i < COUNTER_KERNEL_COUNT; ++i) {
 			counterKernels[i] = addKernel(new GraphCliqueDFEKernel(makeKernelParameters(counterKernelPrefix + "_" + i)));
 		}
@@ -43,17 +49,16 @@ public class GraphCliqueDFEManager extends XilinxAlveoU250Manager {
 		}
 		
 	
-		for (int i = 0; i < COUNTER_KERNEL_COUNT / 2; ++i) {
-			partialCollectorKernel_0.getInput("cliqueCount_" + i) <== counterKernels[i].getOutput("cliqueCount");
-		}
-		
-		for (int i = COUNTER_KERNEL_COUNT / 2; i < COUNTER_KERNEL_COUNT; ++i) {
-			partialCollectorKernel_1.getInput("cliqueCount_" + i) <== counterKernels[i].getOutput("cliqueCount");
+		for (int i = 0; i < COLLECTOR_KERNEL_COUNT; ++i) {
+			for (int j = 0; j < COUNTER_KERNEL_PER_COLLECTOR_KERNEL; ++j) {
+				final int idx = i * COUNTER_KERNEL_PER_COLLECTOR_KERNEL + j;
+				partialCollectorKernels[i].getInput("cliqueCount_" + idx) <== counterKernels[idx].getOutput("cliqueCount");
+			}
 		}
 
-		finalCollectorKernel.getInput("cliqueCount_" + COUNTER_KERNEL_COUNT) <== partialCollectorKernel_0.getOutput("cliqueCount");
-		finalCollectorKernel.getInput("cliqueCount_" + (COUNTER_KERNEL_COUNT + 1)) <== partialCollectorKernel_1.getOutput("cliqueCount");
-		
+		for (int i = 0; i < COLLECTOR_KERNEL_COUNT; ++i) {
+			finalCollectorKernel.getInput("cliqueCount_" + (COUNTER_KERNEL_COUNT + i)) <== partialCollectorKernels[i].getOutput("cliqueCount");
+		}
 		
 		final DFELink cliqueCountStream = addStreamToCPU("cliqueCount");
 		cliqueCountStream <== finalCollectorKernel.getOutput("cliqueCount");
@@ -63,6 +68,15 @@ public class GraphCliqueDFEManager extends XilinxAlveoU250Manager {
 	public static void main(final String[] argv) {
 		final EngineParameters params = new EngineParameters(argv);
 		final GraphCliqueDFEManager manager = new GraphCliqueDFEManager(params);
+		
+		BuildConfig conf = manager.getBuildConfig();
+		conf.setSynthesisStrategy(SynthesisStrategy.FLOW_PERF_OPTIMIZED_HIGH);
+		boolean isProbe = false;
+		conf.setImplementationStrategies(Utility.chooseImplementationStrategies(false, isProbe, false));
+		conf.setParallelism(6);
+		
+		manager.setDefaultStreamClockFrequency(65);
+		
 		manager.build();
 	}
 
