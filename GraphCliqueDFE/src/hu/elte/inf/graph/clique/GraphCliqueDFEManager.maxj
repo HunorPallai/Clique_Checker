@@ -2,7 +2,10 @@ package hu.elte.inf.graph.clique;
 
 import com.maxeler.maxcompiler.v2.build.EngineParameters;
 import com.maxeler.maxcompiler.v2.managers.custom.DFELink;
+import com.maxeler.maxcompiler.v2.managers.custom.ManagerClock;
+import com.maxeler.maxcompiler.v2.managers.custom.blocks.Fanout;
 import com.maxeler.maxcompiler.v2.managers.custom.blocks.KernelBlock;
+import com.maxeler.maxcompiler.v2.managers.engine_interfaces.EngineInterface;
 
 import com.maxeler.platform.max5.manager.BuildConfig;
 import com.maxeler.platform.max5.manager.SynthesisStrategy;
@@ -15,54 +18,111 @@ public class GraphCliqueDFEManager extends XilinxAlveoU250Manager {
 	public static final String partialCollectorKernelPrefix = "PartialCollectorKernel";
 	public static final String finalCollectorKernelName = "FinalCollectorKernel";
 	
+	public static final int SLR_COUNT = XilinxAlveoU250Manager.NamedRegion.values().length;
+	public static final int REG_PER_X = 1;
+	
 	public static final int COUNTER_KERNEL_COUNT = 32;
 	public static final int COLLECTOR_KERNEL_COUNT = 4;
 	public static final int COUNTER_KERNEL_PER_COLLECTOR_KERNEL = COUNTER_KERNEL_COUNT / COLLECTOR_KERNEL_COUNT;
+	public static final int COUNTER_KERNEL_PER_SLR = COUNTER_KERNEL_COUNT / SLR_COUNT;
+	public static final int COLLECTOR_KERNEL_PER_SLR = COLLECTOR_KERNEL_COUNT / SLR_COUNT;
+	
+	
 
 	public GraphCliqueDFEManager(EngineParameters params) {
 		super(params);
 
+		pushNamedRegion(NamedRegion.SLR1);
+		
 		final KernelBlock inputKernel = addKernel(new InputKernel(makeKernelParameters(inputKernelName), COUNTER_KERNEL_COUNT));
+		final KernelBlock finalCollectorKernel = addKernel(new ResultCollectorKernel(makeKernelParameters(
+																					finalCollectorKernelName),
+																					COLLECTOR_KERNEL_COUNT,
+																					COUNTER_KERNEL_COUNT));
+		inputKernel.getInput("adjMatrixRow") <== addStreamFromCPU("adjMatrixRow");
+		Fanout inputFanout = fanout("inputFanout");
+		inputFanout.getInput() <== inputKernel.getOutput("adjMatrix");
+		
+		popRegion(); //SLR1
+
 		
 		final KernelBlock[] partialCollectorKernels = new KernelBlock[COLLECTOR_KERNEL_COUNT];
-		for (int i = 0; i < COLLECTOR_KERNEL_COUNT; ++i) {
-			partialCollectorKernels[i] = addKernel(new ResultCollectorKernel(
-														makeKernelParameters(partialCollectorKernelPrefix + "_" + i),
-														COUNTER_KERNEL_PER_COLLECTOR_KERNEL,
-														i * COUNTER_KERNEL_PER_COLLECTOR_KERNEL));
-		}
-		final KernelBlock finalCollectorKernel = addKernel(new ResultCollectorKernel(makeKernelParameters(
-																	finalCollectorKernelName),
-																	COLLECTOR_KERNEL_COUNT,
-																	COUNTER_KERNEL_COUNT));
 		final KernelBlock[] counterKernels = new KernelBlock[COUNTER_KERNEL_COUNT];
-		for (int i = 0; i < COUNTER_KERNEL_COUNT; ++i) {
-			counterKernels[i] = addKernel(new GraphCliqueDFEKernel(makeKernelParameters(counterKernelPrefix + "_" + i)));
-		}
-
-		final DFELink adjMatrixRowStream = addStreamFromCPU("adjMatrixRow");
-		inputKernel.getInput("adjMatrixRow") <== adjMatrixRowStream;
-
 		
-		for (int i = 0; i < COUNTER_KERNEL_COUNT; ++i) {
-			counterKernels[i].getInput("adjMatrix") <== inputKernel.getOutput("adjMatrix_" + i);
-		}
-		
-	
-		for (int i = 0; i < COLLECTOR_KERNEL_COUNT; ++i) {
-			for (int j = 0; j < COUNTER_KERNEL_PER_COLLECTOR_KERNEL; ++j) {
-				final int idx = i * COUNTER_KERNEL_PER_COLLECTOR_KERNEL + j;
+		ManagerClock[] mc = new ManagerClock[SLR_COUNT];
+		NamedRegion[] slrRegions = NamedRegion.values();
+		for (int i = 0; i < SLR_COUNT; ++i) {
+			DFELink inputToSLR = inputFanout.addOutput("inputToSLR_" + i);
+			
+			if (i != 1) {
+				inputToSLR = Utility.slrCrossingChain("inputToSLR", Integer.toString(i), inputToSLR, 1, i, REG_PER_X, this, mc);
+			}
+			
+			pushNamedRegion(slrRegions[i]);
+			Fanout slrToCounterFanout = fanout("slrToCounterFanout_" + i);
+			slrToCounterFanout.getInput() <== inputToSLR;
+			
+			for (int j = 0; j < COLLECTOR_KERNEL_PER_SLR; j++) {
+				final int idx = i * COLLECTOR_KERNEL_PER_SLR + j;
+				partialCollectorKernels[idx] = addKernel(new ResultCollectorKernel(
+													makeKernelParameters(partialCollectorKernelPrefix + "_" + idx),
+													COUNTER_KERNEL_PER_COLLECTOR_KERNEL,
+													idx * COUNTER_KERNEL_PER_COLLECTOR_KERNEL));
+			}
+			
+			for (int j = 0; j < COUNTER_KERNEL_PER_SLR; ++j) {
+				final int idx = i * COUNTER_KERNEL_PER_SLR + j;
+				counterKernels[idx] = addKernel(new GraphCliqueDFEKernel(makeKernelParameters(counterKernelPrefix + "_" + idx)));
+				
+				DFELink slrFanoutToCounter= slrToCounterFanout.addOutput("toCounter_" + i + "_" + idx);
+				counterKernels[idx].getInput("adjMatrix") <== slrFanoutToCounter;
+				
 				partialCollectorKernels[i].getInput("cliqueCount_" + idx) <== counterKernels[idx].getOutput("cliqueCount");
 			}
+			
+			popRegion(); //slrRegions[i]
 		}
-
-		for (int i = 0; i < COLLECTOR_KERNEL_COUNT; ++i) {
-			finalCollectorKernel.getInput("cliqueCount_" + (COUNTER_KERNEL_COUNT + i)) <== partialCollectorKernels[i].getOutput("cliqueCount");
+		
+		for (int i = 0; i < SLR_COUNT; ++i) {
+			pushNamedRegion(slrRegions[i]);
+			DFELink partialToFinalCollector = partialCollectorKernels[i].getOutput("cliqueCount");
+			popRegion(); //slrRegions[i]
+			
+			if (i != 1) {
+				partialToFinalCollector = Utility.slrCrossingChain("partialToFinalCollector", Integer.toString(i), partialToFinalCollector, i, 1, REG_PER_X, this, mc);
+			}
+			
+			pushNamedRegion(NamedRegion.SLR1);
+			finalCollectorKernel.getInput("cliqueCount_" + (COUNTER_KERNEL_COUNT + i)) <== partialToFinalCollector;
+			popRegion(); //SLR1]
 		}
 		
 		final DFELink cliqueCountStream = addStreamToCPU("cliqueCount");
 		cliqueCountStream <== finalCollectorKernel.getOutput("cliqueCount");
 		
+	}
+	
+	EngineInterface interfaceDefault() {
+		EngineInterface ei = new EngineInterface();
+		StringBuilder route = new StringBuilder();
+		
+		route.append("inputFanout -> inputToSLR_0");
+		route.append(", inputFanout -> inputToSLR_1");
+		route.append(", inputFanout -> inputToSLR_2");
+		route.append(", inputFanout -> inputToSLR_3");
+	
+		for (int i = 0; i < SLR_COUNT; ++i) {
+			for (int j = 0; j < COUNTER_KERNEL_PER_SLR; ++j) {
+				final int idx = i * COUNTER_KERNEL_PER_SLR + j;
+				route.append(", slrToCounterFanout_ " + i + " -> toCounter_" + i + "_" + idx);
+			}
+		}
+		route.append(", inputToSLRFanout32 -> inputToSLRChain32");
+		route.append(", partialToFinalCollectorFanout32 -> partialToFinalCollectorChain32");
+		
+		ei.route(route.toString());
+		
+		return ei;
 	}
 
 	public static void main(final String[] argv) {
@@ -75,7 +135,8 @@ public class GraphCliqueDFEManager extends XilinxAlveoU250Manager {
 		conf.setImplementationStrategies(Utility.chooseImplementationStrategies(false, isProbe, false));
 		conf.setParallelism(6);
 		
-		manager.setDefaultStreamClockFrequency(65);
+		manager.createSlicInterface(manager.interfaceDefault());
+		manager.setDefaultStreamClockFrequency(60);
 		
 		manager.build();
 	}

@@ -28,8 +28,9 @@ public class InputKernel extends Kernel {
 			adjMatrix[i] <== Reductions.streamHold(adjMatrixRow, isRowTick);
 		}
 
-		for (int i = 0; i < numOfKernels; ++i) {
-			io.output("adjMatrix_" + i, adjMatrix, ADJ_MATRIX_TYPE, ~isLoadPhase);
-		}
+		io.output("adjMatrix", adjMatrix, ADJ_MATRIX_TYPE, ~isLoadPhase);
+//		for (int i = 0; i < numOfKernels; ++i) {
+//			io.output("adjMatrix_" + i, adjMatrix, ADJ_MATRIX_TYPE, ~isLoadPhase);
+//		}
 	}
 }

@@ -5,7 +5,6 @@
 #include <time.h>
 
 #include "GraphCliqueCPUCode.h"
-//#include "Simulation.h"
 #include "Bitstream.h"
 #include "MaxSLiCInterface.h"
 
@@ -107,14 +106,12 @@ uint64_t* generateAdjacencyMatrix(int n, double p) {
 }
 
 int main(int argc, char* argv[]) {
-	int n = 43;
+	int n = 13;
 	int k = 5;
 	
-	if (argc >= 3) {
+	if (argc >= 2) {
 		n = atoi(argv[1]);
-		k = atoi(argv[2]);
 	}
-	const float startTimeBeforePartition = (float)clock()/CLOCKS_PER_SEC;
 
 	const int num_partitions = NUMBER_OF_COUNTER_KERNELS * KERNEL_INTERNAL_CONCURRENCY;
 	GosperPartition* partitions = (GosperPartition*)malloc( num_partitions * sizeof(GosperPartition));
@@ -122,23 +119,13 @@ int main(int argc, char* argv[]) {
 
 	gospersSplit(k, n, num_partitions, partitions);
 
-	for (int i = 0; i < num_partitions; ++i) {
-		printf("Part %d initial subset: %lu, count: %lu, limit: %lu\n", i,
-				(unsigned long) partitions[i].initialSubset,
-				(unsigned long) partitions[i].count,
-				(unsigned long) partitions[i].limit);
-	}
-
-	uint64_t subsetCount = binomialCoefficient(n, k);
-	printf("Binomial Coefficient n=%d, k=%d: %lu\n", n, k, (unsigned long) subsetCount);
-
 	uint64_t maxComputeTickCount = KERNEL_INTERNAL_CONCURRENCY * partitions[0].count;
 	uint64_t totalTickCount = maxComputeTickCount + LOAD_TICK_COUNT;
 
 	uint64_t* cliqueCounts = (uint64_t*) malloc(KERNEL_INTERNAL_CONCURRENCY *sizeof(uint64_t));
 	memset(cliqueCounts, 0, KERNEL_INTERNAL_CONCURRENCY * sizeof(uint64_t));
 
-	uint64_t* adjMatrix = generateAdjacencyMatrix(n, 0.5);
+	uint64_t* adjMatrix = generateCompleteMatrix(n);
 
 	max_file_t* maxfile = Bitstream_init();
 	max_engine_t* engine = max_load(maxfile, "*");
@@ -148,8 +135,6 @@ int main(int argc, char* argv[]) {
 	max_set_ticks(actions, "InputKernel", totalTickCount);
 	max_set_uint64t(actions, "InputKernel", "loadTickCount", LOAD_TICK_COUNT);
 	//===========
-
-	const float startTimeBeforeInit = (float)clock()/CLOCKS_PER_SEC;
 
 	//===========
 	for (int i = 0; i < NUMBER_OF_COUNTER_KERNELS; ++i) {
@@ -192,13 +177,7 @@ int main(int argc, char* argv[]) {
 	
 	const float endTime = (float)clock()/CLOCKS_PER_SEC;
 
-	printf("Start time before partition: %f\n", startTimeBeforePartition);
-	printf("Start time before init: %f\n", startTimeBeforeInit);
-	printf("Start time calc only: %f\n", startTimeCalcOnly);
-	printf("End time: %f\n", endTime);
-	printf("Elapsed time since partition: %f\n", (endTime - startTimeBeforePartition));
-	printf("Elapsed time since init: %f\n", (endTime - startTimeBeforeInit));
-	printf("Elapsed time since calc: %f\n", (endTime - startTimeCalcOnly));
+	printf("FPGA Brute Force: %f seconds\n", (endTime - startTimeCalcOnly));
 
 	for (int i = 0; i < KERNEL_INTERNAL_CONCURRENCY; ++i)
 		printf("cliqueCounts[%d] = %lu\n", i, (unsigned long) cliqueCounts[i]);

@@ -153,9 +153,9 @@ run_sim: start_sim
 	
 .PHONY: run_dfe
 run_dfe:
-	@ echo "Running $(BIN_DIR)/$(TARGET)"
+	@ echo "Running $(BIN_DIR)/$(TARGET) with n=$(N)"
 	@ echo
-	@ hwloc-bind --membind node:0 --cpubind node:0 -- $(BIN_DIR)/$(TARGET)
+	@ hwloc-bind --membind node:0 --cpubind node:0 -- $(BIN_DIR)/$(TARGET) $(N)
 	@ echo
 	@ echo "$(BIN_DIR)/$(TARGET) Terminated successfully."
 	@ echo
